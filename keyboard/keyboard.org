@@ -1,0 +1,26 @@
+* Keyboard
+
+The keyboard selected and the supporting wrist holders satisfies these physiological axioms:
+
+- neutral positing of the back is straight (not bent in the upper nor lower part)
+- neutral position of the the shoulders is pushed back (not lean forward)
+- neutral position of wrists when sitting with elbows bent is with thump pointing up, not to the inner side
+
+Based on these I understood that I need
+
+- split keyboard that allows me to type without shoulders internally rotated (that leads to unwanted shoulder forward bending)
+- 40 degrees wrist holders that eliminate wrist rotation
+
+I will write more about this topic later.
+For now here is result of my research.
+
+Keyboard chosen is: Iris:
+
+https://keeb.io/products/iris-keyboard-split-ergonomic-keyboard
+
+[[file:20210525_070719.jpg]]
+[[file:20210524_192911.jpg]]
+[[file:20210525_055137.jpg]]
+[[file:20210524_205250.jpg]]
+[[file:20210524_195900.jpg]]
+[[file:20210525_055129.jpg]]
