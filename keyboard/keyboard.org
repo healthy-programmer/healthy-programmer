@@ -44,7 +44,7 @@ and this tools were used:
 1) Each wrist pad consists of 2 pieces.
 2) Upper piece was created by sawing the wooden plate with angle copying the shape of the keyboard
 3) Lower piece is just leftover from step 2.
-4) Last thing I needed to do is to screw bottom part, lower and upper pad parts (3 layers) together with small  self-tapping screws from the bottom side.
+4) Last thing I needed to do is to screw bottom part, lower and upper pad parts (3 layers) together with small  self-tapping screws from the bottom side. Here be careful and use thin self-tapping screws. Screw them slowly to avoid wood cracks.
 
 * Result
 
