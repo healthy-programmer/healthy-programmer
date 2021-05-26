@@ -3,24 +3,54 @@
 The keyboard selected and the supporting wrist holders satisfies these physiological axioms:
 
 - neutral positing of the back is straight (not bent in the upper nor lower part)
-- neutral position of the the shoulders is pushed back (not lean forward)
+- neutral position of the the shoulders is pushed back (not leaned forward)
 - neutral position of wrists when sitting with elbows bent is with thump pointing up, not to the inner side
 
 Based on these I understood that I need
 
 - split keyboard that allows me to type without shoulders internally rotated (that leads to unwanted shoulder forward bending)
-- 40 degrees wrist holders that eliminate wrist rotation
+- 40 degrees rotated wrist holders that eliminate wrist rotation
 
 I will write more about this topic later.
 For now here is result of my research.
 
 Keyboard chosen is: Iris:
-
 https://keeb.io/products/iris-keyboard-split-ergonomic-keyboard
 
-[[file:20210525_070719.jpg]]
-[[file:20210524_192911.jpg]]
-[[file:20210525_055137.jpg]]
-[[file:20210524_205250.jpg]]
-[[file:20210524_195900.jpg]]
-[[file:20210525_055129.jpg]]
+* Construction
+
+For holder assembly these material is needed:
+
+- 4 pieces of wooden plates (I used kitchen cutting board :o) for local manufacturer here in Slovakia for 5 EUR/piece), size: 150 x 250 x 10 millimeters that perfectly fit for iris keyboard
+- 4 metal bars with threads (for screws). I used 80 millimeter long bars.
+- 4 screws fitting metal bar threads
+- 4 self-tapping screws
+
+and this tools were used:
+
+- saw
+- drill
+- screw driver
+
+** Assembly procedcure
+
+*** Bottom part
+
+1) Two wooden plates are supposed to be used for bottom part and all I did with them was drilling 2 holes 15 millimeters from the inner border.
+2) Than I mounted 2 bars to each bottom piece using screws.
+
+*** Wrist supporting pads
+
+1) Each wrist pad consists of 2 pieces.
+2) Upper piece was created by sawing the wooden plate with angle copying the shape of the keyboard
+3) Lower piece is just leftover from step 2.
+4) Last thing I needed to do is to screw bottom part, lower and upper pad parts (3 layers) together with small  self-tapping screws from the bottom side.
+
+* Result
+
+[[file:images/20210525_070719.jpg]]
+[[file:images/20210524_192911.jpg]]
+[[file:images/20210525_055137.jpg]]
+[[file:images/20210524_205250.jpg]]
+[[file:images/20210524_195900.jpg]]
+[[file:images/20210525_055129.jpg]]
