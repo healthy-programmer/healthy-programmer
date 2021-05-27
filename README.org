@@ -18,6 +18,6 @@ One year later I would like to share this journey with you.
 * Ergonomic keyboard
 
 - [[file:./keyboard/keyboard.org][Construction]]
-- [[file:./keyboard/traditional-vs-ergo.org][Natural position of body while sitting]]
+- [[file:./keyboard/traditional-vs-ergo.org][Natural body position while sitting]]
 
 Michal

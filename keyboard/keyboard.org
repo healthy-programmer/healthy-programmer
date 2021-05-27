@@ -11,7 +11,7 @@ Based on these I understood that I need
 - split keyboard that allows me to type without shoulders internally rotated (that leads to unwanted shoulder forward bending)
 - 40 degrees rotated wrist holders that eliminate wrist rotation
 
-Investigation of correct and wrong sitting [[file:./traditional-vs-ergo.org][Link]]
+Investigation of correct and wrong sitting: [[file:./traditional-vs-ergo.org][Natural body position while sitting]]
 
 Keyboard chosen is: Iris:
 https://keeb.io/products/iris-keyboard-split-ergonomic-keyboard
