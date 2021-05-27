@@ -1,4 +1,4 @@
-# healthy-programmer
+* Healthy programmer
 
 Motivation for this project is to share my long term experience with setting up the working environment
 that can help to keep all sitting people fresh and healthy from both mental and physical point of views.
@@ -14,5 +14,10 @@ During the Covid 19 difficult year (2020/2021) when everybody else was on home o
 open space office and my employer (Gratex International) allowed me to set up new effective working environment.
 
 One year later I would like to share this journey with you.
+
+* Ergonomic keyboard
+
+- [[file:./keyboard/keyboard.org][Construction]]
+- [[file:./keyboard/traditional-vs-ergo.org][Natural position of body while sitting]]
 
 Michal
