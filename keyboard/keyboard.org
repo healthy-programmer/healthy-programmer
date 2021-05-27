@@ -1,4 +1,4 @@
-* Keyboard
+* My motivation for ergonomic keyboard
 
 The keyboard selected and the supporting wrist holders satisfies these physiological axioms:
 
@@ -11,8 +11,7 @@ Based on these I understood that I need
 - split keyboard that allows me to type without shoulders internally rotated (that leads to unwanted shoulder forward bending)
 - 40 degrees rotated wrist holders that eliminate wrist rotation
 
-I will write more about this topic later.
-For now here is result of my research.
+Investigation of correct and wrong sitting [[file:./traditional-vs-ergo.org][Link]]
 
 Keyboard chosen is: Iris:
 https://keeb.io/products/iris-keyboard-split-ergonomic-keyboard
@@ -21,7 +20,7 @@ https://keeb.io/products/iris-keyboard-split-ergonomic-keyboard
 
 For holder assembly these material is needed:
 
-- 4 pieces of wooden plates (I used kitchen cutting board :o) for local manufacturer here in Slovakia for 5 EUR/piece), size: 150 x 250 x 10 millimeters that perfectly fit for iris keyboard
+- 4 pieces of wooden plates (I used kitchen cutting board :o) from local manufacturer here in Slovakia for 5 EUR/piece), size: 150 x 250 x 10 millimeters that perfectly fit for iris keyboard
 - 4 metal bars with threads (for screws). I used 80 millimeter long bars.
 - 4 screws fitting metal bar threads
 - 4 self-tapping screws

@@ -1,0 +1,20 @@
+* Traditional and split keyboard compare
+
+This is how I sit behind normal keyboard. My shoulders were leaned forward as I wanted to ensure comfort position for my wrists.
+
+[[file:images/20210527_055138.jpg]]
+
+When I tried to sit straight, my wrists felt uncomfortable because of the unnatural bend and internal rotation of the forearm.
+
+[[file:images/20210527_055142.jpg]]
+
+I tried to investigate what is the natural position of wrists while person sit straight. And I found nothing new. Thumbs are pointing up. Forearms are not internally rotated. And hands are naturally
+positioned apart at the shoulder distance. In this position shoulders do not fall into internal rotation and back hump.
+
+[[file:images/20210527_055146.jpg]]
+
+That's why I have chosen split keyboard. In order to eliminate internal forearm rotation I built wrist supporting holders leading my forearms to their neutral position.
+
+This is how I cheaply built wrist supporting holders from wooden plates originally used as cutting boards in my wife's kitchen. [[file:./keyboard.org][Link]]
+
+[[file:images/20210527_055155.jpg]]
