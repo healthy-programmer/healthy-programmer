@@ -46,8 +46,11 @@ and this tools were used:
 2) Upper piece was created by sawing the wooden plate with angle copying the shape of the keyboard
 3) Lower piece is just leftover from step 2.
 4) I used the glue to put these pieces together.
-5) Finally I screwed bottom part and wrist supporting part together with small self-tapping screws from the bottom side. Here be careful and use thin self-tapping screws. Screw them slowly to avoid wood cracks.
-6) Last thing I needed to do was gluing the wooden pins to the outside edge of the holder. This prevents the keyboard from slipping.
+
+** Putting them together
+
+1) Finally I screwed bottom part and wrist supporting part together with small self-tapping screws from the bottom side. Here be careful and use thin self-tapping screws. Screw them slowly to avoid wood cracks.
+2) Last thing I needed to do was gluing the wooden pins to the outside edge of the holder. This prevents the keyboard from slipping.
 
 *Note* The reason why I glued top and middle part (instead of screwing all 3 pieces together) is that shorter and thinner self-tapping screws are sufficient consequently. And the reason why I didn't glue all
 3 pieces together is that wrist tap still can be unmounted in the future and the leg screw on the bottom part is accessible for the leg replacement for example if you decide to change the slopping angle
