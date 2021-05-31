@@ -24,28 +24,54 @@ For holder assembly these material is needed:
 - 4 metal bars with threads (for screws). I used 80 millimeter long bars.
 - 4 screws fitting metal bar threads
 - 4 self-tapping screws
+- 2 pieces of wooden pin (avoiding the keyboard slip from the sloping bottom part of the holder)
 
 and this tools were used:
 
 - saw
 - drill
 - screw driver
+- glue (fast drying superglue)
 
-** Assembly procedcure
+* Assembly procedcure
 
-*** Bottom part
+** Bottom part
 
 1) Two wooden plates are supposed to be used for bottom part and all I did with them was drilling 2 holes 15 millimeters from the inner border.
 2) Than I mounted 2 bars to each bottom piece using screws.
 
-*** Wrist supporting pads
+** Wrist supporting pads
 
 1) Each wrist pad consists of 2 pieces.
 2) Upper piece was created by sawing the wooden plate with angle copying the shape of the keyboard
 3) Lower piece is just leftover from step 2.
-4) Last thing I needed to do is to screw bottom part, lower and upper pad parts (3 layers) together with small  self-tapping screws from the bottom side. Here be careful and use thin self-tapping screws. Screw them slowly to avoid wood cracks.
+4) I used the glue to put these pieces together.
+5) Finally I screwed bottom part and wrist supporting part together with small self-tapping screws from the bottom side. Here be careful and use thin self-tapping screws. Screw them slowly to avoid wood cracks.
+6) Last thing I needed to do was gluing the wooden pins to the outside edge of the holder. This prevents the keyboard from slipping.
 
-* Result
+*Note* The reason why I glued top and middle part (instead of screwing all 3 pieces together) is that shorter and thinner self-tapping screws are sufficient consequently. And the reason why I didn't glue all
+3 pieces together is that wrist tap still can be unmounted in the future and the leg screw on the bottom part is accessible for the leg replacement for example if you decide to change the slopping angle
+in the future.
+
+* Procedure pictures
+
+[[file:images/20210528_081249.jpg]]
+[[file:images/20210528_081556.jpg]]
+[[file:images/20210528_081859.jpg]]
+[[file:images/20210528_081922.jpg]]
+
+[[file:images/20210530_212538.jpg]]
+[[file:images/20210530_212729.jpg]]
+[[file:images/20210530_212908.jpg]]
+[[file:images/20210530_214224.jpg]]
+[[file:images/20210531_052034.jpg]]
+[[file:images/20210530_215652.jpg]]
+[[file:images/20210530_220520.jpg]]
+[[file:images/20210531_052053.jpg]]
+[[file:images/20210530_220525.jpg]]
+[[file:images/20210530_215433.jpg]]
+
+* Result pictures
 
 [[file:images/20210525_070719.jpg]]
 [[file:images/20210524_192911.jpg]]
