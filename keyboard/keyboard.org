@@ -13,8 +13,13 @@ Based on these I understood that I need
 
 Investigation of correct and wrong sitting: [[file:./traditional-vs-ergo.org][Natural body position while sitting]]
 
-Keyboard chosen is: Iris:
+Keyboard chosen is: Keebio Iris
 https://keeb.io/products/iris-keyboard-split-ergonomic-keyboard
+
+And my custom layout can be found here
+
+https://github.com/healthy-programmer/qmk_firmware/tree/michalkelemen/keyboards/keebio/iris/keymaps/michalkelemen
+
 
 * Construction
 
