@@ -1,7 +1,16 @@
 * Pair programming
 
 We found pair programming very effective for those type of tasks where focus and concentration is the key.
-Especially when complicated and error sensitive reractoring of code was inevitable.
+Especially when complicated and error sensitive reractoring of code was inevitable. Programming is sometimes
+very stressful activity. Colleague and friend on the line is very helpful element. Even simple supervision
+and gentle supportive talk helps a lot. Pair programmers don't need to be at the same business or technical level at all.
+During pair cooperation you may find very interesting the editing skills and habits of your counterpart.
+
+For example we were on some refactoring tasks in accounting module. Dsl definition of accounting templates was supposed to be
+amended on several places in multiple files. I had a business knowledge while my counterpart had an exact
+idea how to use Vim macros to change the configuration effectively.
+
+Pair programming session can be used for the education purposes as well.
 Personally I was educated how to code in clojure lisp language by using pair programming sessions.
 It is very effective when two brains are sharing and supplementing thoughts about the common code base.
 
