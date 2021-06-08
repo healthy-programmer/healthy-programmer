@@ -20,4 +20,8 @@ One year later I would like to share this journey with you.
 - [[file:./keyboard/keyboard.org][Construction]]
 - [[file:./keyboard/traditional-vs-ergo.org][Natural body position while sitting]]
 
+* Extreme programming
+
+- [[file:./extreme-programming/pair-programming.org][Pair programming]]
+
 Michal

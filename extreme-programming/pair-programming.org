@@ -1,0 +1,18 @@
+* Pair programming
+
+We found pair programming very effective for those type of tasks where focus and concentration is the key.
+Especially when complicated and error sensitive reractoring of code was inevitable.
+Personally I was educated how to code in clojure lisp language by using pair programming sessions.
+It is very effective when two brains are sharing and supplementing thoughts about the common code base.
+
+Technical point of view.
+
+One of use established shared ssh session via tmate (https://tmate.io/) and other connected into it.
+We were very lucky that our favorite IDE Emacs (Spacemacs) can be executed in command line mode.
+Both of us were able to use the same IDE and edit the same files. We alternated in typing / supervising
+as needed.
+
+We had verbal contact as well via jitsi (https://jitsi.org/) so our communication / cooperation became
+super effective. When we tried this for the first time it was real programming adventure.
+
+[[file:./images/tmate.png]]
