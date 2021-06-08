@@ -1,0 +1,7 @@
+* Code visualization on 4k monitor
+
+I found 4k monitor very effective tool for code visualization especially in the situations when related files (same feature, same module) are needed to be edited.
+It is very elegant also for test driven development. Tests and business codes are developed at the same time on the same screen.
+
+
+[[file:./images/4k-code-visualization.jpg]]
