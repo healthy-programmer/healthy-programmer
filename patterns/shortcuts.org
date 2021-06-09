@@ -1,47 +1,117 @@
 * Shortcuts
 
-
 * Often used shortcuts
 
 I don't want to duplicate any other editor and application user manual.
 These are the shortcuts I found useful and I am using them while editing source code.
+For the education purposed I maintain list of them.
+
+** Emacs / Console
+
+|-----+-------------------------------------|
+| C-b | Goto one char backward              |
+| C-f | Goto one char forward               |
+| M-b | Goto one word backward              |
+| M-f | Goto one word forward               |
+| C-p | Previous command in console history |
+| C-n | Next command in console history     |
 
 ** Vim
 
-|------------+---------------------------------------------------------------------------------------------------------------------------------|
-| g          |                                                                                                                                 |
-| GG         |                                                                                                                                 |
+*** Switching between edit and command mode
 
-*** Searches
+|---+-----------------------------------|
+| a | Edit mode after cursor            |
+| A | Edit mode at the end of the line  |
+| i | Edit mode before cursor           |
+| o | New line and edit mode            |
+| s | Delete current char and edit mode |
 
-|-------------------+-------------------------------------------------|
-| / <pattern> enter | Search <pattern> and than n (next) N (previous) |
-| / enter esc       | Escape from seach mode                          |
+*** Navigation
+
+|-----+--------------------------------------------------|
+| gg  | Goto file beginning                              |
+| G   | Goto end of the file                             |
+| g;  | Goto recently edited point                       |
+| %   | Goto beginning of the ( [ { and end of the ) ] } |
+| ^   | Goto at the beginning of the line                |
+| $   | Goto at the end of the line                      |
+| w   | Jump to the next word                            |
+| b   | Jump to the previous word                        |
+| W   |                                                  |
+| B   |                                                  |
+| C-f | Jump one page forward                            |
+| C-b | Jump one page backward                           |
+
+*** Search
+
+|-------------------+------------------------------------------------------|
+| / <pattern> enter | Search <pattern> and than n (next) N (previous)      |
+| / enter esc       | Escape from seach mode                               |
+| #                 | Selected word to be searched within buffer           |
+| # /               | Selected word to be searched across files in project |
 
 *** Text modification
 
-|-------+--------------------|
-| v i " | Visualize inside " |
-| d i " |                    |
-| c i " | Change inside ""   |
+|------------+-----------------------------------------|
+| v i "      | Visualize inside "                      |
+| V          | Visualize current line                  |
+| d i "      |                                         |
+| c i "      | Change inside ""                        |
+| u          |                                         |
+| C-r        |                                         |
+| dd         | Delete current line                     |
+| d s        | Delete surrounding                      |
+| c s [ {    | Change surrounding from [ to {          |
+| c s " '    | Change surrounding from " to '          |
+| d t <char> | Delete until first occurrence of <char> |
+| c t <char> | Change until first occurrence of <char> |
 
 *** Code formatting
 
-|----------+------------------------------------------|
-| ==       | format current line                      |
-| = i {    | format code inside curly brackets {}     |
-| = i (    | format code inside parentheses (in lisp) |
-| = G      | format code until end of the file        |
+|-------+------------------------------------------|
+| ==    | format current line                      |
+| = i { | format code inside curly brackets {}     |
+| = i ( | format code inside parentheses (in lisp) |
+| = G   | format code until end of the file        |
 
 *** Registers and macros
 
-|------------+---------------------------------------------------------------------------------------------------------------------------------|
-| y          | yank visualized text into clipboard                                                                                             |
-| Y          | yank current line into clipboard                                                                                                |
-| p P        | paste text from clipboard                                                                                                       |
-| " <char> y | multiple clipboards - yank text into register <char>, char is any letter or number on the keyboard, I usually use home row char |
-| " <cahr> p | paste text from register <char>                                                                                                 |
+|-----------------+---------------------------------------------------------------------------------------------------------------------------------|
+| y               | yank visualized text into clipboard                                                                                             |
+| Y               | yank current line into clipboard                                                                                                |
+| p P             | paste text from clipboard                                                                                                       |
+| " <char> y      | multiple clipboards - yank text into register <char>, char is any letter or number on the keyboard, I usually use home row char |
+| " <cahr> p      | paste text from register <char>                                                                                                 |
+| q <char> .... q | start defining of macro under register <char> .... are commands end edits that are macro body                                   |
+| @ <char>        | execution of macro stored in register <char>                                                                                    |
 
 ** Spacemacs
+
+*** Navigation
+
+|---------------------+---------------------------------------------------------------------------------|
+| jj <pattern> <char> | Find occurances of pattern, than jump to the occurrence visualized under <char> |
+
+*** Search
+
+|-----------+--------------------------------------------|
+| spc s S   | Selected word occurrence within the buffer |
+| spc s a p |                                            |
+| spc p f   |                                            |
+| spc b r   |                                            |
+
+*** File manipulation
+
+|---------+-----------|
+| spc f s | File save |
+
+*** Buffer swapping
+
+|---------+-----------------------|
+| spc b p | Previous buffer       |
+| spc b n | Next buffer           |
+| spc b d | Delete current buffer |
+| spc b r | Recently used buffer  |
 
 *** Lisp code manipulation (spc , k)
