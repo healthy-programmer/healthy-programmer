@@ -20,10 +20,14 @@ One year later I would like to share this journey with you.
 - [[file:./keyboard/keyboard.org][Construction]]
 - [[file:./keyboard/traditional-vs-ergo.org][Natural body position while sitting]]
 
-* Useful working environment patterns for better comfort
+* Useful working environment patterns
 
 - [[file:./extreme-programming/pair-programming.org][Pair programming]]
 - [[file:./patterns/4k-code-visualization.org][4K monitor for better code visualization]]
-- Multi-workspace environment using tile-based window manager that allows to navigate through applications subconsciously
+- Multi-workspace environment using tile-based window manager that allows to navigate through applications subconsciously (TODO: document i3 wm setup, worskpaces, init script after computer restart)
+- Subconscious navigation via keyboard shortcuts (TODO: Document your vim / emacs often used shortcuts, lisp like wrap, slurp, barf, raise code manipulation)
+- [[file:/patterns/keep.org][Keep playing/learning - effective dealing with frustration]]
+
+
 
 Michal

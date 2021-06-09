@@ -1,0 +1,53 @@
+* Keep playing/learning - effective dealing with frustration
+
+Tasks on the projects are not always funny thing to do. Sometimes they cause lot of frustration and not just from the time schedule perspective.
+There are types of tasks that are time consuming and technologically boring. But at the same time they are very important for the project and maybe
+the most important for the project. For me implementation of the custom reports are these type of tasks. Reports and letter templates.
+They don't bring any new technical knowledge and don't bring any emotional satisfaction. Human brain is naturally starving for the new knowledge.
+But writing the reports don't bring anything new. Once the initial database query is optimized, which is the most interesting part of the task,
+rest of the work is about binding query result into final excel columns, playing with the formatting and layouts, sometimes extra calculation of
+fields that are not directly part of the query result. At the same time reports, letters and other system outcomes are the most important
+functionality as these are published out of the system to the customers (letters) and third parties (reports) and therefore should be implemented properly.
+
+** Play
+
+When I am on this type of tasks I cannot focus for along time and I tend to lose my focus quite often. In these situations I found very
+effective to have ready useful alternatives for quick relax and recovery. Instead of browsing the social networks that is very time consuming
+and passive way of relax not related to my programming profession I found very effective alternative that comes from my hobby and interest
+and still it is related to my job. It can vary from person to person. For me it is fast typing practice. Personally I have dedicated
+workspace for relaxing with these 2 pages ready to serve.
+
+https://www.keybr.com/
+https://play.typeracer.com/
+
+The point is when I already lost the focus still I am doing something active and helpful. Typing faster and more precisely is benefit for
+the future and this skill is definitely worthy to be gradually improved. And as this is an active relax, few minutes is enough to recharge
+the batteries.
+
+** Learn
+
+Recently I inherited tasks to contribute already existing reports implemented by former colleagues.
+Task was to optimize query and then to extend excel outcome with new columns.
+After a short period of time I found out that optimization means to rewrite original database query completely because it was wrongly implemented.
+I also needed to adjust data model at the first place, than implement the data intervention scripts and execute them on production data
+in order to be able to simplify the query for faster execution.
+Some reports I needed to rewrite completely including the column binding. What is more frustrated than implementation of
+boring tasks and in addition not from scratch but to study someone else's code and optimize it?
+
+During the pair programming session we decided to rewrite some part of the implementation into new language (clojure). Original implementation
+was in Java/Groovy. Clojure is a language for lisp code than runs in JVM. All Java libraries can be used in it and at the same time
+still we can use functional rather than object oriented paradigm. Depression changed into challenging euphoria immediately. I will learn
+something new (new language) but what's more important shortly we found that report implementation in Clojure is much more effective
+less time consuming because Clojure enables us to reload scripts or functions with their new version in JVM instantly without need of server restart.
+Once the interface is set between Java core application and Clojure extension code server doesn't need to be restarted at all. And we can
+focus on query implementation and column binding in new language.
+
+Conclusion here is that sometimes it is possible to benefit from despair by changing the approach.
+
+Query implementation
+
+[[file:./images/clojure-report-query.png]]
+
+Column binding implementation
+
+[[file:./images/clojure-report-columns.png]]
