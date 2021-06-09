@@ -18,6 +18,7 @@ and still it is related to my job. It can vary from person to person. For me it 
 workspace for relaxing with these 2 pages ready to serve.
 
 https://www.keybr.com/
+
 https://play.typeracer.com/
 
 The point is when I already lost the focus still I am doing something active and helpful. Typing faster and more precisely is benefit for
@@ -44,10 +45,10 @@ focus on query implementation and column binding in new language.
 
 Conclusion here is that sometimes it is possible to benefit from despair by changing the approach.
 
-Query implementation
+Mongo Query implementation in Clojure
 
 [[file:./images/clojure-report-query.png]]
 
-Column binding implementation
+Report Column binding implementation in Clojure
 
 [[file:./images/clojure-report-columns.png]]
