@@ -1,0 +1,47 @@
+* Shortcuts
+
+
+* Often used shortcuts
+
+I don't want to duplicate any other editor and application user manual.
+These are the shortcuts I found useful and I am using them while editing source code.
+
+** Vim
+
+|------------+---------------------------------------------------------------------------------------------------------------------------------|
+| g          |                                                                                                                                 |
+| GG         |                                                                                                                                 |
+
+*** Searches
+
+|-------------------+-------------------------------------------------|
+| / <pattern> enter | Search <pattern> and than n (next) N (previous) |
+| / enter esc       | Escape from seach mode                          |
+
+*** Text modification
+
+|-------+--------------------|
+| v i " | Visualize inside " |
+| d i " |                    |
+| c i " | Change inside ""   |
+
+*** Code formatting
+
+|----------+------------------------------------------|
+| ==       | format current line                      |
+| = i {    | format code inside curly brackets {}     |
+| = i (    | format code inside parentheses (in lisp) |
+| = G      | format code until end of the file        |
+
+*** Registers and macros
+
+|------------+---------------------------------------------------------------------------------------------------------------------------------|
+| y          | yank visualized text into clipboard                                                                                             |
+| Y          | yank current line into clipboard                                                                                                |
+| p P        | paste text from clipboard                                                                                                       |
+| " <char> y | multiple clipboards - yank text into register <char>, char is any letter or number on the keyboard, I usually use home row char |
+| " <cahr> p | paste text from register <char>                                                                                                 |
+
+** Spacemacs
+
+*** Lisp code manipulation (spc , k)
