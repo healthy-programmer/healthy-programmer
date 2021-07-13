@@ -11,7 +11,7 @@
 
 mu4e and emailing without using mouse, quick emailing
 
-** Ergonomic keyboard and multiple work spaces
+* Ergonomic keyboard and multiple workspaces
 
 Ergonomic keyboards are designed to provide enhanced comfort for typer's fingers, especially for pinkies that are heavily
 overloaded especially in programmer profession as they are responsible for keys such as:
@@ -76,3 +76,17 @@ are handy available under Quote and Equal keys (workspaces 13 and 14).
 | 16 | GUI + Tab          | Reserved                                                                     |
 | 17 | GUI + Tild         | Reserved                                                                     |
 | 18 | GUI + Back Slah    | Reserved                                                                     |
+
+* Tile based window manager
+
+Personally I've decided to use i3 window manager
+
+https://i3wm.org/
+
+My custom i3 configuration can be found here.
+
+[[./config][Custom i3 Configuration]]
+
+My init script that initializes all virtual workspaces is available bellow.
+
+[[./i3init.sh][i3 Init Script]]
