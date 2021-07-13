@@ -1,4 +1,6 @@
-* Shortcuts
+* Keyboard shortcuts
+
+For effective software development the programmer is required to use modern IDE with lot of features such as: code editors, server execution
 
 * Often used shortcuts
 

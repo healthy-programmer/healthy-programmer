@@ -1,15 +1,78 @@
-* Workspaces
+* Multiple workspaces
 
+  TODO
 
+  Navigation, subcoscious navigation, scripting what is typed, less of mouse, mouse motion cannot be scripted
+  Mental focus on navigation takes energy,
+  Tiled window manager
+  link to i3m config here
+ (TODO: document i3 wm setup, worskpaces, init script after computer restart)
+  project a workspace to be more detailed, explain sub windows for Project A.
 
-           /* ┌────────┬─────────────────┬─────────────┬─────────────┬─────────────┬───────────────┐                ┌────────────────┬─────────────┬─────────────┬─────────────┬────────────────────┬────────┐ */
-           /**/KC_GRV,  KC_1,             KC_2,         KC_3,         KC_4,         KC_5,                            KC_6,            KC_7,         KC_8,         KC_9,         KC_0,                KC_PSCR,
-           /* ├────────┼─────────────────┼─────────────┼─────────────┼─────────────┼───────────────┤                ├────────────────┼─────────────┼─────────────┼─────────────┼────────────────────┼────────┤ */
-           /**/KC_TAB,  KC_Q,             KC_W,         KC_E,         KC_R,         KC_T,                            KC_Y,            KC_U,         KC_I,         KC_O,         KC_P,                KC_MINS,
-           /* ├────────┼─────────────────┼─────────────┼─────────────┼─────────────┼───────────────┤                ├────────────────┼─────────────┼─────────────┼─────────────┼────────────────────┼────────┤ */
-           /**/KC_TILD, LT(_ADJUST,KC_A), LALT_T(KC_S), LCTL_T(KC_D), LSFT_T(KC_F), LT(_RAISE,KC_G),                 LT(_RAISE,KC_H), RSFT_T(KC_J), RCTL_T(KC_K), RALT_T(KC_L), LT(_ADJUST,KC_SCLN), KC_QUOT,
-           /* ├────────┼─────────────────┼─────────────┼─────────────┼─────────────┼───────────────┼──────┐┌────────┼────────────────┼─────────────┼─────────────┼─────────────┼────────────────────┼────────┤ */
-           /**/KC_BSLS, KC_Z,             KC_X,         KC_C,         KC_V,         KC_B,           LOWER,  KC_CAPS, KC_N,            KC_M,         KC_COMM,      KC_DOT,       KC_SLSH,             KC_EQL,
-           /* └────────┴─────────────────┴─────────────┴────────┬────┴────────┬────┴──────────┬────┴───┬──┘└───┬────┴───┬────────────┴───┬─────────┴───┬─────────┴─────────────┴────────────────────┴────────┘ */
-           /**/                                                  LGUI_T(KC_ESC),   KC_SPC,     KC_SPC,          KC_BSPC, KC_ENT,          KC_LGUI
-           /*                                                   └─────────────┴───────────────┴────────┘       └────────┴────────────────┴─────────────┘ */
+mu4e and emailing without using mouse, quick emailing
+
+** Ergonomic keyboard and multiple work spaces
+
+Ergonomic keyboards are designed to provide enhanced comfort for typer's fingers, especially for pinkies that are heavily
+overloaded especially in programmer profession as they are responsible for keys such as:
+right parenthesis, both square brackets, curly brackets, pipe, backslash, dash, underscore, escape, tild, backspace
+and on some types of traditional keyboards back tick too. Traditionally pinkies are also supposed to operate modifier keys including
+shift, control, gui key.
+Ergonomic keyboards and especially those with split feature employ thumbs for some of above mentioned key strokes.
+And some ergonomic keyboards with alternative key behavior on press and hold allows typer to use home keys for modifier as well
+as depicted on the schema bellow, for example when s is pressed, it is regular 's' key. But on hold it is ALT modifier.
+For some keyboards this behavior can be fully configured based on the particular typer's preference.
+
+Example of such ergonomic keyboards are those with QMK firemware.
+
+https://docs.qmk.fm/#/
+
+This is my best personal preference and full configuration can be found here:
+
+https://github.com/healthy-programmer/qmk_firmware/tree/michalkelemen/keyboards/keebio/iris/keymaps/michalkelemen
+
+   #+begin_src c
+
+     /*
+       ┌────────┬──────┬──────┬──────┬──────┬──────┐                ┌──────┬──────┬──────┬──────┬──────┬────────┐
+        BTICK,   1,     2,     3,     4,     5,                      6,     7,     8,     9,     0,     PSCR,
+       ├────────┼──────┼──────┼──────┼──────┼──────┤                ├──────┼──────┼──────┼──────┼──────┼────────┤
+        TAB,                                                                                            MINS,
+       ├────────┼──────┼──────┼──────┼──────┼──────┤                ├──────┼──────┼──────┼──────┼──────┼────────┤
+        TILD,    A/LAY, S/ALT, D/CTRL,F/LAY,                                J/LAY, K/CTRL,L/ALT, ;/LAY, QUOTE,
+       ├────────┼──────┼──────┼──────┼──────┼──────┼──────┐┌────────┼──────┼──────┼──────┼──────┼──────┼────────┤
+        BSLASH,                                                                                         EQL,
+       └────────┴──────┴──────┴─┬────┴───┬──┴───┬──┴───┬──┘└───┬────┴───┬──┴───┬──┴───┬──┴──────┴──────┴────────┘
+                                 GUI/ESC, SPACE, SHIFT,         BSPACE,  SHIFT, GUI/ENTER
+                                └────────┴──────┴──────┘       └────────┴──────┴──────┘
+     */
+
+   #+end_src
+
+Now let's get back to the multiple work spaces topic. Usually we use MOD+1, MOD+2, ... for switching between workspaces.
+But now when pinkies are free, instead of operating modifier keys they can operate regular keys. As a beneficial consequence of this
+you can end up with solution described in the following table.
+As U can see the keys representing workspaces are logically the border keys on the keyboard layout which
+is easy to memorize and personally for me it is very comfortable. Especially often switched worspaces (quick notes, email communication)
+are handy available under Quote and Equal keys (workspaces 13 and 14).
+
+| ID | Navigation         | Workspace Purpose                                                            |
+|----+--------------------+------------------------------------------------------------------------------|
+|  1 | GUI + 1            | Project A workspace                                                          |
+|  2 | GUI + 2            | Project B workspace                                                          |
+|  3 | GUI + 3            | Project C workspace                                                          |
+|  4 | GUI + 4            | Project D workspace                                                          |
+|  5 | GUI + 5            |                                                                              |
+|  6 | GUI + 6            | Study, Keboards, Healthy Programmer, Typing practice                         |
+|  7 | GUI + 7            |                                                                              |
+|  8 | GUI + 8            | Text buffer for stacktrace investigation                                     |
+|  9 | GUI + 9            |                                                                              |
+| 10 | GUI + 10           |                                                                              |
+| 11 | GUI + Print Screen | Application environments, logins and passwords                               |
+| 12 | GUI + Minus        | Build and deployment                                                         |
+| 13 | GUI + Quote        | Email communication                                                          |
+| 14 | GUI + Equal        | General TODO List / Quick Notes in org file, Jira web page for current tasks |
+| 15 | GUI + Back Tick    | Reserved                                                                     |
+| 16 | GUI + Tab          | Reserved                                                                     |
+| 17 | GUI + Tild         | Reserved                                                                     |
+| 18 | GUI + Back Slah    | Reserved                                                                     |
