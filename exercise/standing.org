@@ -42,4 +42,4 @@ Progress:
 - I started with few hours a day firstly
 - But than I was able to lengthen the time for entire working day (with lunch break of course when I really enjoyed resting in sit)
 
-[[./patterns/images/20220104_072151.jpg]]
+[[../patterns/images/20220104_072151.jpg]]
