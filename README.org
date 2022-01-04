@@ -19,6 +19,7 @@ One year later I would like to share this journey with you.
 
 - [[file:./keyboard/keyboard.org][Construction]]
 - [[file:./keyboard/traditional-vs-ergo.org][Natural body position while sitting]]
+- Standing while working as a alternative
 
 * Useful working environment patterns
 
@@ -28,6 +29,6 @@ One year later I would like to share this journey with you.
 - Subconscious navigation via keyboard shortcuts (TODO: Document your vim / emacs often used shortcuts, lisp like wrap, slurp, barf, raise code manipulation)
 - [[file:/patterns/keep.org][Keep playing/learning - effective dealing with frustration]]
 
-
+[[./patterns/images/20220104_072151.jpg]]
 
 Michal

@@ -1,5 +1,20 @@
 * Multiple workspaces
 
+As an developer we use to work with multiple software applications. If there are few windows to be operated
+Alt+Tab as an switch between them is sufficient. But at some point in terms of efficiency we often became so called
+heavy users interacting with dozens of windows, console terminals, etc. The more applications are being used
+the more challenging navigation between them became. At this point using of virtual workspaces is effective
+solution. Application windows can positioned on dedicated workspace. It is good to continuously add new
+application windows to dedicated workslapce. With time you will memorize their placement and than navigation
+became subconscious process and this dramatically enhances programmer's performance.
+
+Tiling window manager choice is another step to the higher performance. There can be multiple application
+window positioned on virtual workspace and with tiling window manager you can navigate between application
+windows by using keyboard.
+
+
+
+
   TODO
 
   Navigation, subcoscious navigation, scripting what is typed, less of mouse, mouse motion cannot be scripted
@@ -45,7 +60,27 @@ https://github.com/healthy-programmer/qmk_firmware/tree/michalkelemen/keyboards/
        └────────┴──────┴──────┴─┬────┴───┬──┴───┬──┴───┬──┘└───┬────┴───┬──┴───┬──┴───┬──┴──────┴──────┴────────┘
                                  GUI/ESC, SPACE, SHIFT,         BSPACE,  SHIFT, GUI/ENTER
                                 └────────┴──────┴──────┘       └────────┴──────┴──────┘
-     */
+
+     Or in particualr case useage of work spaces like this.
+     Once I started to be a heavy user of Linux multi workspace, documentation became high priority must.
+
+       ┌────────┬──────┬──────┬──────┬──────┬──────┐                ┌──────┬──────┬──────┬──────┬──────┬────────┐
+                 MUM,   SUU,   CORE, RIEMANN, STUDY                  KEY,   CAMUN, GARB,  WS-SET, CLOJ,  ENV,
+                                     KONAN
+                                     KUBECTL
+       ├────────┼──────┼──────┼──────┼──────┼──────┤                ├──────┼──────┼──────┼──────┼──────┼────────┤
+                                                                                                        JENKINS,
+       ├────────┼──────┼──────┼──────┼──────┼──────┤                ├──────┼──────┼──────┼──────┼──────┼────────┤
+                                                                                                        EMAIL,
+       ├────────┼──────┼──────┼──────┼──────┼──────┼──────┐┌────────┼──────┼──────┼──────┼──────┼──────┼────────┤
+                                                                                                        TODOs,
+                                                                                                        DAILY AGENDA,
+                                                                                                        DIARY NOTEs,
+                                                                                                        KNOWLEDGE BASE
+       └────────┴──────┴──────┴─┬────┴───┬──┴───┬──┴───┬──┘└───┬────┴───┬──┴───┬──┴───┬──┴──────┴──────┴────────┘
+
+                                └────────┴──────┴──────┘       └────────┴──────┴──────┘
+     ,*/
 
    #+end_src
 
