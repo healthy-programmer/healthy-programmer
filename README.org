@@ -19,7 +19,7 @@ One year later I would like to share this journey with you.
 
 - [[file:./keyboard/keyboard.org][Construction]]
 - [[file:./keyboard/traditional-vs-ergo.org][Natural body position while sitting]]
-- Standing while working as a alternative
+- [[file:./exercise/standing.org][Standing while working as a alternative]]
 
 * Useful working environment patterns
 
