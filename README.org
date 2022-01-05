@@ -21,6 +21,10 @@ One year later I would like to share this journey with you.
 - [[file:./keyboard/traditional-vs-ergo.org][Natural body position while sitting]]
 - [[file:./exercise/standing.org][Standing while working as a alternative]]
 
+* Healthy stuff
+
+- [[./exercise/exercise.org][Daily excercise routine]]
+
 * Useful working environment patterns
 
 - [[file:./extreme-programming/pair-programming.org][Pair programming]]
