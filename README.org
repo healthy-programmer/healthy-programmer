@@ -1,5 +1,12 @@
 * Healthy programmer
 
+I always wanted to have crystal clear working desk and work in transparent working environment :)
+
+[[./hardening/20220118_114153.jpg]]
+
+Michal Kelemen
+
+
 Motivation for this project is to share my long term experience with setting up the working environment
 that can help to keep all sitting people fresh and healthy from both mental and physical point of views.
 Topics I would like to present are these:
