@@ -93,3 +93,7 @@ Some of us are also fans of Wim Hof breathing method that is in fact meditation 
 This 11 minutes long guided breathing session is good to be done before stepping into the water.
 
 https://www.youtube.com/watch?v=tybOi4hjZFQ&t=1s
+
+Kubernetes developer needs to calm down.
+
+[[./kubernetes.jpg]]
