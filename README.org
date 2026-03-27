@@ -1,6 +1,15 @@
 #+TITLE: Healthy Programmer
 
 [[./exercise/images/move-reminder-screenshot.png]]
+
+This project is actively growing—new exercises and routines are added every week to help you stay healthy and pain-free at your desk.
+I'm also working to make it easier to find the right exercise for you: soon, all exercises will be categorized by body area (neck, back, hips, knees, ankles) and by difficulty.
+
+#+BEGIN_TODO
+- Categorize exercises by body area (neck, back, hips, knees, ankles)
+- Categorize exercises by difficulty
+#+END_TODO
+
 * Move Reminder: Stay Healthy Behind the Computer!
 
 Are you spending all day behind a computer? I do too—44 years old, a lifetime at the keyboard.  
