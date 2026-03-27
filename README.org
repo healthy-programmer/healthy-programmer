@@ -1,6 +1,6 @@
 #+TITLE: Healthy Programmer
 
-[[file:exercise/images/move-reminder-screenshot.png]]
+[[./exercise/images/move-reminder-screenshot.png]]
 * Move Reminder: Stay Healthy Behind the Computer!
 
 Are you spending all day behind a computer? I do too—44 years old, a lifetime at the keyboard.  
