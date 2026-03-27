@@ -1,12 +1,12 @@
 * Keyboard shortcuts
 
-For effective software development the programmer is required to use modern IDE with lot of features such as: code editors, server execution
+For effective software development, a programmer is required to use a modern IDE with many features such as code editors, server execution, and more.
 
 * Often used shortcuts
 
-I don't want to duplicate any other editor and application user manual.
-These are the shortcuts I found useful and I am using them while editing source code.
-For the education purposed I maintain list of them.
+I don't want to duplicate any other editor or application user manual.
+These are the shortcuts I found useful and use while editing source code.
+For educational purposes, I maintain a list of them here.
 
 ** Emacs / Console
 

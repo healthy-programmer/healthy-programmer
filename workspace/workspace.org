@@ -1,16 +1,16 @@
 * Multiple workspaces
 
-As an developer we use to work with multiple software applications. If there are few windows to be operated
-Alt+Tab as an switch between them is sufficient. But at some point in terms of efficiency we often became so called
-heavy users interacting with dozens of windows, console terminals, etc. The more applications are being used
-the more challenging navigation between them became. At this point using of virtual workspaces is effective
-solution. Application windows can positioned on dedicated workspace. It is good to continuously add new
-application windows to dedicated workslapce. With time you will memorize their placement and than navigation
-became subconscious process and this dramatically enhances programmer's performance.
+As developers, we often work with multiple software applications. If there are only a few windows to operate,
+Alt+Tab as a switch between them is sufficient. But at some point, in terms of efficiency, we often become so-called
+"heavy users," interacting with dozens of windows, console terminals, etc. The more applications are being used,
+the more challenging navigation between them becomes. At this point, using virtual workspaces is an effective
+solution. Application windows can be positioned on dedicated workspaces. It is good to continuously add new
+application windows to dedicated workspaces. Over time, you will memorize their placement, and then navigation
+becomes a subconscious process, which dramatically enhances programmer performance.
 
-Tiling window manager choice is another step to the higher performance. There can be multiple application
-window positioned on virtual workspace and with tiling window manager you can navigate between application
-windows by using keyboard.
+Choosing a tiling window manager is another step toward higher performance. There can be multiple application
+windows positioned on a virtual workspace, and with a tiling window manager, you can navigate between application
+windows by using the keyboard.
 
 
 
@@ -28,15 +28,15 @@ mu4e and emailing without using mouse, quick emailing
 
 * Ergonomic keyboard and multiple workspaces
 
-Ergonomic keyboards are designed to provide enhanced comfort for typer's fingers, especially for pinkies that are heavily
-overloaded especially in programmer profession as they are responsible for keys such as:
-right parenthesis, both square brackets, curly brackets, pipe, backslash, dash, underscore, escape, tild, backspace
-and on some types of traditional keyboards back tick too. Traditionally pinkies are also supposed to operate modifier keys including
-shift, control, gui key.
-Ergonomic keyboards and especially those with split feature employ thumbs for some of above mentioned key strokes.
-And some ergonomic keyboards with alternative key behavior on press and hold allows typer to use home keys for modifier as well
-as depicted on the schema bellow, for example when s is pressed, it is regular 's' key. But on hold it is ALT modifier.
-For some keyboards this behavior can be fully configured based on the particular typer's preference.
+Ergonomic keyboards are designed to provide enhanced comfort for the typist's fingers, especially for pinkies, which are heavily
+overloaded in the programming profession as they are responsible for keys such as:
+right parenthesis, both square brackets, curly brackets, pipe, backslash, dash, underscore, escape, tilde, backspace,
+and on some types of traditional keyboards, backtick too. Traditionally, pinkies are also supposed to operate modifier keys including
+Shift, Control, and GUI key.
+Ergonomic keyboards, especially those with a split feature, employ thumbs for some of the above-mentioned keystrokes.
+Some ergonomic keyboards with alternative key behavior on press and hold allow the typist to use home keys for modifiers as well,
+as depicted in the schema below. For example, when 's' is pressed, it is a regular 's' key, but on hold, it is the ALT modifier.
+For some keyboards, this behavior can be fully configured based on the particular typist's preference.
 
 Example of such ergonomic keyboards are those with QMK firemware.
 
@@ -61,35 +61,35 @@ https://github.com/healthy-programmer/qmk_firmware/tree/michalkelemen/keyboards/
                                  GUI/ESC, SPACE, SHIFT,         BSPACE,  SHIFT, GUI/ENTER
                                 └────────┴──────┴──────┘       └────────┴──────┴──────┘
 
-     Or in particualr case useage of work spaces like this.
-     Once I started to be a heavy user of Linux multi workspace, documentation became high priority must.
-
-       ┌────────┬──────┬──────┬──────┬──────┬──────┐                ┌──────┬──────┬──────┬──────┬──────┬────────┐
-                 MUM,   SUU,   CORE, RIEMANN, STUDY                  KEY,   CAMUN, GARB,  WS-SET, CLOJ,  ENV,
-                                     KONAN
-                                     KUBECTL
-       ├────────┼──────┼──────┼──────┼──────┼──────┤                ├──────┼──────┼──────┼──────┼──────┼────────┤
-                                                                                                        JENKINS,
-       ├────────┼──────┼──────┼──────┼──────┼──────┤                ├──────┼──────┼──────┼──────┼──────┼────────┤
-                                                                                                        EMAIL,
-       ├────────┼──────┼──────┼──────┼──────┼──────┼──────┐┌────────┼──────┼──────┼──────┼──────┼──────┼────────┤
-                                                                                                        TODOs,
-                                                                                                        DAILY AGENDA,
-                                                                                                        DIARY NOTEs,
-                                                                                                        KNOWLEDGE BASE
-       └────────┴──────┴──────┴─┬────┴───┬──┴───┬──┴───┬──┘└───┬────┴───┬──┴───┬──┴───┬──┴──────┴──────┴────────┘
-
-                                └────────┴──────┴──────┘       └────────┴──────┴──────┘
-     ,*/
+     Or in particular, usage of workspaces like this:
+     Once I started to be a heavy user of Linux multi-workspace, documentation became a high-priority must.
+     
+            ┌────────┬──────┬──────┬──────┬──────┬──────┐                ┌──────┬──────┬──────┬──────┬──────┬────────┐
+                      MUM,   SUU,   CORE, RIEMANN, STUDY                  KEY,   CAMUN, GARB,  WS-SET, CLOJ,  ENV,
+                                          KONAN
+                                          KUBECTL
+            ├────────┼──────┼──────┼──────┼──────┼──────┤                ├──────┼──────┼──────┼──────┼──────┼────────┤
+                                                                                             JENKINS,
+            ├────────┼──────┼──────┼──────┼──────┼──────┤                ├──────┼──────┼──────┼──────┼──────┼────────┤
+                                                                                             EMAIL,
+            ├────────┼──────┼──────┼──────┼──────┼──────┼──────┐┌────────┼──────┼──────┼──────┼──────┼──────┼────────┤
+                                                                                             TODOs,
+                                                                                             DAILY AGENDA,
+                                                                                             DIARY NOTEs,
+                                                                                             KNOWLEDGE BASE
+            └────────┴──────┴──────┴─┬────┴───┬──┴───┬──┴───┬──┘└───┬────┴───┬──┴───┬──┴───┬──┴──────┴──────┴────────┘
+     
+                                     └────────┴──────┴──────┘       └────────┴──────┴──────┘
+          ,*/
 
    #+end_src
 
-Now let's get back to the multiple work spaces topic. Usually we use MOD+1, MOD+2, ... for switching between workspaces.
-But now when pinkies are free, instead of operating modifier keys they can operate regular keys. As a beneficial consequence of this
-you can end up with solution described in the following table.
-As U can see the keys representing workspaces are logically the border keys on the keyboard layout which
-is easy to memorize and personally for me it is very comfortable. Especially often switched worspaces (quick notes, email communication)
-are handy available under Quote and Equal keys (workspaces 13 and 14).
+Now let's get back to the multiple workspaces topic. Usually, we use MOD+1, MOD+2, ... for switching between workspaces.
+But now, when pinkies are free, instead of operating modifier keys, they can operate regular keys. As a beneficial consequence of this,
+you can end up with the solution described in the following table.
+As you can see, the keys representing workspaces are logically the border keys on the keyboard layout, which
+is easy to memorize and, personally, very comfortable for me. Especially, often-switched workspaces (quick notes, email communication)
+are conveniently available under the Quote and Equal keys (workspaces 13 and 14).
 
 | ID | Navigation         | Workspace Purpose                                                            |
 |----+--------------------+------------------------------------------------------------------------------|
@@ -112,16 +112,16 @@ are handy available under Quote and Equal keys (workspaces 13 and 14).
 | 17 | GUI + Tild         | Reserved                                                                     |
 | 18 | GUI + Back Slah    | Reserved                                                                     |
 
-* Tile based window manager
+* Tile-based window manager
 
-Personally I've decided to use i3 window manager
+Personally, I've decided to use the i3 window manager:
 
 https://i3wm.org/
 
-My custom i3 configuration can be found here.
+My custom i3 configuration can be found here:
 
 [[./config][Custom i3 Configuration]]
 
-My init script that initializes all virtual workspaces is available bellow.
+My init script that initializes all virtual workspaces is available below:
 
 [[./i3init.sh][i3 Init Script]]
