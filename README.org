@@ -1,45 +1,129 @@
-* Healthy programmer
+* Move Reminder: Stay Healthy Behind the Computer!
 
-I have always wanted to have a crystal-clear desk and work in a transparent, well-organized environment. :)
+Are you spending all day behind a computer? I do too—44 years old, a lifetime at the keyboard.  
+But for the last 6 years, I have been standing only (no sitting at all), working 8 hours a day, and regularly exercising and stretching during work.  
+This is how I became fit again—no more pain, just energy and flexibility.
 
+**The Move Reminder script is the centerpiece of this project.**  
+It pops up a random exercise GIF at regular intervals, reminding you to move, stretch, and break the sedentary cycle—even while standing.
+
+---
+
+**How to Install & Run**
+
+1. Make sure you have Python 3 installed.
+2. Run the script from the terminal:
+
+#+BEGIN_SRC shell
+./script/run_move_reminder.sh --interval 30 --duration 30 --position bottom-right
+#+END_SRC
+
+Or, for a quick test:
+
+#+BEGIN_SRC shell
+./script/run_move_reminder.sh --interval 1 --duration 15 --help
+#+END_SRC
+
+This will show you all available options.
+
+---
+
+**Script Parameters**
+
+- `--interval INTERVAL`  
+  Interval in minutes between reminders (default: 30)
+
+- `--duration DURATION`  
+  How long (seconds) to show the GIF window (default: 30)
+
+- `--position {top-left,top-right,bottom-left,bottom-right,center}`  
+  Popup window position (default: bottom-right)
+
+- `-h`, `--help`  
+  Show help message and exit
+
+**Example:**
+#+BEGIN_SRC shell
+./script/run_move_reminder.sh --interval 45 --duration 20 --position center
+#+END_SRC
+
+---
+
+* My Story: Standing, Moving, and Feeling Great
+
+I spent my whole life behind a computer. For the last 6 years, I have not sat at all during work—standing only, 8 hours a day.  
+But standing still is not enough! The real change came when I started moving, stretching, and exercising regularly throughout the workday.
+
+Now, at 44, I have no more pain. My body feels strong, flexible, and alive.  
+The Move Reminder script helps me keep this habit—reminding me to move, stretch, and stay active, even during long work sessions.
+
+* Why Movement Matters
+
+Sitting is not a natural human posture, but standing still all day isn't perfect either.  
+Our bodies need regular movement—muscles weaken, joints stiffen, and pain becomes normal without it.  
+With a few minutes of movement every hour, you can stay pain-free and energized.
+
+**The Move Reminder script** makes it easy: it interrupts your work with a random exercise GIF, so you never forget to move.
+
+---
+
+* Essential Exercise Routines
+
+**See [[./exercise/exercise.org][exercise/exercise.org]] for full details and images.**
+
+**During the Workday:**
+- Shoulder mobility with resistance band
+- Hamstring stretch & lower/middle back strengthening
+- Shoulder/chest stretch & glute activation
+- Hip flexor & abs stretch
+- Back, shoulder, and glute strength (wall exercises)
+- Handstand (advanced, optional)
+
+**Key Principles:**
+- Stretch what is tight, strengthen what is weak
+- Focus on back, hips, shoulders, and legs—counteract static posture
+- Make it fun! Use a balance board, try new moves, and laugh at yourself
+
+**Results after 2 years:**  
+No more lower back pain, flexible body, and a habit that sticks.  
+Sometimes I do these exercises during the day, not just in the morning.
+
+---
+
+* Standing as a Way of Life
+
+**See [[./exercise/standing.org][exercise/standing.org]] for full story and tips.**
+
+After years of sitting, I switched to a standing desk—and for the last 6 years, I haven't looked back.  
+Standing all day, combined with regular movement and stretching, keeps my body active and pain-free.
+
+**Benefits:**
+- Natural shoulder and elbow position
+- More energy, less sleepiness
+- Higher calorie burn
+- Better mood and focus
+
+**Tips:**
+- Knees slightly bent, toes forward, pelvis neutral
+- Use an absorption mat for comfort
+- Move and stretch throughout the day
+
+---
+
+* More Healthy Programmer Tips
+
+- [[file:./keyboard/keyboard.org][Ergonomic keyboard construction]]
+- [[file:./keyboard/traditional-vs-ergo.org][Natural standing position]]
+- [[file:./hardening/hardening.org][Cold water hardening]]
+- [[file:./patterns/4k-code-visualization.org][4K monitor for code visualization]]
+- [[file:./workspace/workspace.org][Multi-workspace window manager setup]]
+- [[file:./patterns/keep.org][Keep learning and playing!]]
+
+---
+
+#+CAPTION: My workspace and daily movement inspiration
 [[./hardening/20220118_114153.jpg]]
 
+Stay healthy, keep moving, and enjoy your work!
+
 Michal Kelemen
-
-The motivation for this project is to share my long-term experience with setting up a working environment
-that helps keep people who sit for long periods fresh and healthy, both mentally and physically.
-Topics I would like to present include:
-
-- Ergonomic keyboard and wrist support to keep your arms and shoulders in a neutral position without upper or lower back bending
-- Daily exercise routine for a flexible body as compensation for long periods of sitting during the day
-- Cold water hardening in the middle of the workday to recharge your energy
-- Useful working environment patterns for better comfort
-
-I am 45 years old now (2026-03-27), and I have spent about 6 years working intensively behind the computer, in addition to my early childhood experience with computers.
-During the difficult Covid-19 year (2020/2021), when everyone else was working from home, I was commuting daily to the
-open space office, and my employer (Gratex International) allowed me to set up a new, effective working environment.
-
-One year later, I would like to share this journey with you.
-
-* Ergonomic keyboard
-
-- [[file:./keyboard/keyboard.org][Construction]]
-- [[file:./keyboard/traditional-vs-ergo.org][Natural body position while sitting]]
-- [[file:./exercise/standing.org][Standing while working as an alternative]]
-
-* Healthy stuff
-
-- [[./exercise/exercise.org][Daily exercise routine]]
-- [[./hardening/hardening.org][Hardening in the cold water]]
-
-* Useful working environment patterns
-
-- [[file:./extreme-programming/pair-programming.org][Pair programming]]
-- [[file:./patterns/4k-code-visualization.org][4K monitor for better code visualization]]
-- [[file:./workspace/workspace.org][Multi-workspace environment using a tile-based window manager that allows you to navigate through applications subconsciously]]
-- Subconscious navigation via keyboard shortcuts (TODO: Document your vim/emacs frequently used shortcuts, lisp-like wrap, slurp, barf, raise code manipulation)
-- [[file:./patterns/keep.org][Keep playing/learning - effective ways to deal with frustration]]
-
-[[./patterns/images/20220104_072151.jpg]]
-
-Michal
