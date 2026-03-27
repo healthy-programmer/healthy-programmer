@@ -1,3 +1,6 @@
+#+TITLE: Healthy Programmer
+
+[[file:exercise/images/move-reminder-screenshot.png]]
 * Move Reminder: Stay Healthy Behind the Computer!
 
 Are you spending all day behind a computer? I do too—44 years old, a lifetime at the keyboard.  
@@ -15,13 +18,13 @@ It pops up a random exercise GIF at regular intervals, reminding you to move, st
 2. Run the script from the terminal:
 
 #+BEGIN_SRC shell
-./script/run_move_reminder.sh --interval 30 --duration 30 --position bottom-right
+./script/run_move_reminder.sh --interval 60 --duration 30 --position bottom-right
 #+END_SRC
 
 Or, for a quick test:
 
 #+BEGIN_SRC shell
-./script/run_move_reminder.sh --interval 1 --duration 15 --help
+./script/run_move_reminder.sh --interval 1 --duration 15
 #+END_SRC
 
 This will show you all available options.
@@ -31,10 +34,10 @@ This will show you all available options.
 **Script Parameters**
 
 - `--interval INTERVAL`  
-  Interval in minutes between reminders (default: 30)
+  Interval in minutes between reminders (default: 30 minutes)
 
 - `--duration DURATION`  
-  How long (seconds) to show the GIF window (default: 30)
+  How long (seconds) to show the GIF window (default: 30 seconds)
 
 - `--position {top-left,top-right,bottom-left,bottom-right,center}`  
   Popup window position (default: bottom-right)
