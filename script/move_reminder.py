@@ -216,6 +216,11 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             new_gif = random.choice(available)
             new_name = os.path.basename(new_gif)
             new_desc = gif_desc_map.get(new_name, "")
+            # Log the description for debugging
+            print(f"[DEBUG] Next exercise: {new_name}, description: '{new_desc}'")
+            # If description is empty or suspicious, set a default
+            if not new_desc or new_desc.strip() == "!!":
+                new_desc = "No description available for this exercise."
             # Load new frames
             frames, delay, (width, height) = load_gif_frames(new_gif)
             if not frames:
