@@ -32,10 +32,13 @@ def load_gif_descriptions():
     return mapping
 
 def get_gif_files():
+    # Only GIFs referenced in reminder-data.csv
+    gif_desc_map = load_gif_descriptions()
+    csv_gifs = set(gif_desc_map.keys())
     return [
         os.path.join(GIF_DIR, f)
         for f in os.listdir(GIF_DIR)
-        if f.lower().endswith('.gif')
+        if f.lower().endswith('.gif') and f in csv_gifs
     ]
 
 def animate_gif(label, frames, delay, frame_idx=0, anim_state=None):
@@ -142,16 +145,23 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
 
         wrapped = textwrap.wrap(current["description"], width=50)
         desc_height = max(desc_min_height, min(desc_max_height, 20 * len(wrapped))) if current["description"] else 0
-        # Button height estimate
-        button_height = 40
+        # Button height estimate (extended for larger button)
+        button_height = 60
 
         # Calculate total height needed
         total_height = height + desc_height + button_height
 
         # If total height exceeds screen, shrink text widget and enable scrolling
         if total_height > screen_height:
-            desc_height = max(desc_min_height, screen_height - height - button_height)
-            total_height = height + desc_height + button_height
+            # Always reserve space for button and minimum text height
+            available = screen_height - height
+            if available < desc_min_height + button_height:
+                # GIF is too tall, force minimums and let text scroll
+                desc_height = desc_min_height
+                total_height = height + desc_height + button_height
+            else:
+                desc_height = available - button_height
+                total_height = height + desc_height + button_height
 
         root.geometry(f"{width}x{total_height}+{x}+{y}")
         root.resizable(False, False)
@@ -213,12 +223,17 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             # Estimate new description height
             wrapped = textwrap.wrap(new_desc, width=50)
             desc_height = max(desc_min_height, min(desc_max_height, 20 * len(wrapped))) if new_desc else desc_min_height
-            button_height = 40
+            button_height = 60
             total_height = height + desc_height + button_height
             screen_height = root.winfo_screenheight()
             if total_height > screen_height:
-                desc_height = max(desc_min_height, screen_height - height - button_height)
-                total_height = height + desc_height + button_height
+                available = screen_height - height
+                if available < desc_min_height + button_height:
+                    desc_height = desc_min_height
+                    total_height = height + desc_height + button_height
+                else:
+                    desc_height = available - button_height
+                    total_height = height + desc_height + button_height
             # Resize window
             root.geometry(f"{width}x{total_height}+{x}+{y}")
             # Update state
@@ -246,8 +261,8 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             # Reset timer
             reset_timer()
 
-        btn = Button(root, text="Next exercise", command=next_exercise, font=("Arial", 12))
-        btn.pack(pady=5)
+        btn = Button(root, text="Next exercise", command=next_exercise, font=("Arial", 16), height=2)
+        btn.pack(side="bottom", pady=12, padx=8)
 
         root.mainloop()
 
