@@ -38,12 +38,18 @@ def get_gif_files():
         if f.lower().endswith('.gif')
     ]
 
-def animate_gif(label, frames, delay, frame_idx=0):
+def animate_gif(label, frames, delay, frame_idx=0, anim_state=None):
     frame = frames[frame_idx]
     label.config(image=frame)
     label.image = frame
     next_idx = (frame_idx + 1) % len(frames)
-    label.after(delay, animate_gif, label, frames, delay, next_idx)
+    # Cancel previous animation if anim_state is provided
+    if anim_state is not None:
+        if anim_state["timer_id"]:
+            label.after_cancel(anim_state["timer_id"])
+        anim_state["timer_id"] = label.after(delay, animate_gif, label, frames, delay, next_idx, anim_state)
+    else:
+        label.after(delay, animate_gif, label, frames, delay, next_idx)
 
 def show_gif(gif_path, description="", duration=30, position="bottom-right"):
     """
@@ -70,11 +76,45 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
                 pass
 
     def _show_with_tkinter():
+        import textwrap
+        from tkinter import Text, Scrollbar, Frame, BOTH, RIGHT, Y, Button
+
+        # Load all gif files and descriptions for "Next exercise"
+        gif_files = get_gif_files()
+        gif_desc_map = load_gif_descriptions()
+
         root = Tk()
         root.title("Move Reminder!")
-        # Load image first to get its size
-        img = Image.open(gif_path)
-        width, height = img.size
+
+        # Helper to load gif frames (must pass root as master)
+        def load_gif_frames(gif_path):
+            img = Image.open(gif_path)
+            frames = []
+            try:
+                while True:
+                    frame = ImageTk.PhotoImage(img.copy(), master=root)
+                    frames.append(frame)
+                    img.seek(len(frames))
+            except EOFError:
+                pass
+            return frames, img.info.get('duration', 100), img.size
+
+        # State for current gif/desc
+        current = {
+            "gif_path": gif_path,
+            "description": description,
+            "frames": [],
+            "delay": 100,
+            "width": 0,
+            "height": 0,
+        }
+
+        # Load initial gif
+        frames, delay, (width, height) = load_gif_frames(current["gif_path"])
+        current["frames"] = frames
+        current["delay"] = delay
+        current["width"] = width
+        current["height"] = height
 
         # Get screen size
         screen_width = root.winfo_screenwidth()
@@ -96,20 +136,15 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             x = screen_width - width
             y = screen_height - height
 
-        # Dynamically size window for GIF and description
-        from tkinter import Text, Scrollbar, Frame, BOTH, RIGHT, Y
-
         desc_min_height = 60
         desc_max_height = 500
         desc_width = width
 
-        # Estimate description height based on text length
-        import textwrap
-        wrapped = textwrap.wrap(description, width=50)
-        desc_height = max(desc_min_height, min(desc_max_height, 20 * len(wrapped))) if description else 0
+        wrapped = textwrap.wrap(current["description"], width=50)
+        desc_height = max(desc_min_height, min(desc_max_height, 20 * len(wrapped))) if current["description"] else 0
         desc_height = 150
 
-        total_height = height + desc_height
+        total_height = height + desc_height + 40  # Add space for button
         root.geometry(f"{width}x{total_height}+{x}+{y}")
         root.resizable(False, False)
         root.attributes("-topmost", True)
@@ -118,38 +153,67 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         except Exception:
             pass
 
-        frames = []
-        try:
-            while True:
-                frame = ImageTk.PhotoImage(img.copy())
-                frames.append(frame)
-                img.seek(len(frames))
-        except EOFError:
-            pass
-
-        if len(frames) == 0:
-            print(f"Could not load frames from {gif_path}")
-            root.destroy()
-            return
-
-        delay = img.info.get('duration', 100)
         label = Label(root)
         label.pack()
-        animate_gif(label, frames, delay)
 
-        if description:
-            desc_frame = Frame(root, height=desc_height, width=desc_width)
-            desc_frame.pack(fill="x", padx=5, pady=5, expand=True)
-            text_widget = Text(desc_frame, wrap="word", height=int(desc_height/20), width=int(desc_width/10), font=("Arial", 12), bg="white")
-            text_widget.insert("1.0", description)
+        # Animation state for GIF
+        anim_state = {"timer_id": None}
+
+        animate_gif(label, current["frames"], current["delay"], 0, anim_state)
+
+        desc_frame = Frame(root, height=desc_height, width=desc_width)
+        desc_frame.pack(fill="x", padx=5, pady=5, expand=True)
+        text_widget = Text(desc_frame, wrap="word", height=int(desc_height/20), width=int(desc_width/10), font=("Arial", 12), bg="white")
+        text_widget.insert("1.0", current["description"])
+        text_widget.config(state="disabled")
+        text_widget.pack(side="left", fill=BOTH, expand=True)
+        if desc_height == desc_max_height:
+            scrollbar = Scrollbar(desc_frame, command=text_widget.yview)
+            text_widget.config(yscrollcommand=scrollbar.set)
+            scrollbar.pack(side=RIGHT, fill=Y)
+
+        # Timer logic
+        timer_id = [None]
+
+        def reset_timer():
+            if timer_id[0]:
+                root.after_cancel(timer_id[0])
+            timer_id[0] = root.after(duration * 1000, root.destroy)
+
+        reset_timer()
+
+        def next_exercise():
+            # Pick a new random gif (not the current one)
+            available = [f for f in gif_files if f != current["gif_path"]]
+            if not available:
+                return
+            new_gif = random.choice(available)
+            new_name = os.path.basename(new_gif)
+            new_desc = gif_desc_map.get(new_name, "")
+            # Load new frames
+            frames, delay, (width, height) = load_gif_frames(new_gif)
+            if not frames:
+                return
+            # Update state
+            current["gif_path"] = new_gif
+            current["description"] = new_desc
+            current["frames"] = frames
+            current["delay"] = delay
+            current["width"] = width
+            current["height"] = height
+            # Cancel previous animation and start new one
+            animate_gif(label, frames, delay, 0, anim_state)
+            # Update description
+            text_widget.config(state="normal")
+            text_widget.delete("1.0", "end")
+            text_widget.insert("1.0", new_desc)
             text_widget.config(state="disabled")
-            text_widget.pack(side="left", fill=BOTH, expand=True)
-            if desc_height == desc_max_height:
-                scrollbar = Scrollbar(desc_frame, command=text_widget.yview)
-                text_widget.config(yscrollcommand=scrollbar.set)
-                scrollbar.pack(side=RIGHT, fill=Y)
+            # Reset timer
+            reset_timer()
 
-        root.after(duration * 1000, root.destroy)
+        btn = Button(root, text="Next exercise", command=next_exercise, font=("Arial", 12))
+        btn.pack(pady=5)
+
         root.mainloop()
 
     def _show_with_feh():
