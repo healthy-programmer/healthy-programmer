@@ -142,9 +142,17 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
 
         wrapped = textwrap.wrap(current["description"], width=50)
         desc_height = max(desc_min_height, min(desc_max_height, 20 * len(wrapped))) if current["description"] else 0
-        desc_height = 150
+        # Button height estimate
+        button_height = 40
 
-        total_height = height + desc_height + 40  # Add space for button
+        # Calculate total height needed
+        total_height = height + desc_height + button_height
+
+        # If total height exceeds screen, shrink text widget and enable scrolling
+        if total_height > screen_height:
+            desc_height = max(desc_min_height, screen_height - height - button_height)
+            total_height = height + desc_height + button_height
+
         root.geometry(f"{width}x{total_height}+{x}+{y}")
         root.resizable(False, False)
         root.attributes("-topmost", True)
@@ -163,11 +171,19 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
 
         desc_frame = Frame(root, height=desc_height, width=desc_width)
         desc_frame.pack(fill="x", padx=5, pady=5, expand=True)
-        text_widget = Text(desc_frame, wrap="word", height=int(desc_height/20), width=int(desc_width/10), font=("Arial", 12), bg="white")
+        text_widget = Text(
+            desc_frame,
+            wrap="word",
+            height=int(desc_height/20),
+            width=int(desc_width/10),
+            font=("Arial", 12),
+            bg="white"
+        )
         text_widget.insert("1.0", current["description"])
         text_widget.config(state="disabled")
         text_widget.pack(side="left", fill=BOTH, expand=True)
-        if desc_height == desc_max_height:
+        # Always add scrollbar if text is long or window is shrunk
+        if len(wrapped) > desc_height // 20 or total_height > screen_height or desc_height == desc_max_height:
             scrollbar = Scrollbar(desc_frame, command=text_widget.yview)
             text_widget.config(yscrollcommand=scrollbar.set)
             scrollbar.pack(side=RIGHT, fill=Y)
@@ -194,6 +210,17 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             frames, delay, (width, height) = load_gif_frames(new_gif)
             if not frames:
                 return
+            # Estimate new description height
+            wrapped = textwrap.wrap(new_desc, width=50)
+            desc_height = max(desc_min_height, min(desc_max_height, 20 * len(wrapped))) if new_desc else desc_min_height
+            button_height = 40
+            total_height = height + desc_height + button_height
+            screen_height = root.winfo_screenheight()
+            if total_height > screen_height:
+                desc_height = max(desc_min_height, screen_height - height - button_height)
+                total_height = height + desc_height + button_height
+            # Resize window
+            root.geometry(f"{width}x{total_height}+{x}+{y}")
             # Update state
             current["gif_path"] = new_gif
             current["description"] = new_desc
@@ -208,6 +235,14 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             text_widget.delete("1.0", "end")
             text_widget.insert("1.0", new_desc)
             text_widget.config(state="disabled")
+            # Update text widget height
+            text_widget.config(height=int(desc_height/20))
+            # Add scrollbar if needed
+            if len(wrapped) > desc_height // 20 or total_height > screen_height or desc_height == desc_max_height:
+                if not any(isinstance(w, Scrollbar) for w in desc_frame.winfo_children()):
+                    scrollbar = Scrollbar(desc_frame, command=text_widget.yview)
+                    text_widget.config(yscrollcommand=scrollbar.set)
+                    scrollbar.pack(side=RIGHT, fill=Y)
             # Reset timer
             reset_timer()
 
