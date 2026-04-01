@@ -66,6 +66,9 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     save_label = Label(button_row, text="", font=("Arial", 11), background="#f0f0f0")
     save_label.pack(side="left", padx=(8,4))
 
+    selected_count_label = Label(button_row, text="", font=("Arial", 11), background="#f0f0f0")
+    selected_count_label.pack(side="left", padx=(8,4))
+
     canvas = Canvas(setup_win, borderwidth=0, background="#f0f0f0")
     frame = Frame(canvas, background="#f0f0f0")
     scrollbar = Scrollbar(setup_win, orient="vertical", command=canvas.yview)
@@ -105,6 +108,11 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     checkbox_vars = {}
     anim_states = {}
 
+    def update_selected_count():
+        count = sum(var.get() for var in checkbox_vars.values())
+        selected_count_label.config(text=f"Selected: {count}")
+
+
     def load_gif_frames_for_thumb(gif_path):
         img = Image.open(gif_path)
         frames = []
@@ -139,6 +147,10 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
         checkbox = Checkbutton(content_row, text="Include", variable=var, background="#f0f0f0", font=("Arial", 10))
         checkbox.pack(side="left", anchor="n", padx=(0, 8), pady=4)
         checkbox_vars[gif_name] = var
+
+        def on_checkbox_toggle(*args):
+            update_selected_count()
+        var.trace_add("write", on_checkbox_toggle)
 
         try:
             thumb_frames, thumb_delay = load_gif_frames_for_thumb(gif_path)
@@ -192,10 +204,12 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     def select_all():
         for var in checkbox_vars.values():
             var.set(1)
+        update_selected_count()
 
     def deselect_all():
         for var in checkbox_vars.values():
             var.set(0)
+        update_selected_count()
 
     select_all_btn.config(command=select_all)
     deselect_all_btn.config(command=deselect_all)
@@ -206,3 +220,4 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     close_btn.config(command=on_setup_close)
 
     setup_win.protocol("WM_DELETE_WINDOW", on_setup_close)
+    update_selected_count()
