@@ -66,6 +66,16 @@ class ExerciseLogViewer:
         if self.cancel_timer_callback:
             self.cancel_timer_callback()
 
+        # Add a visible Close button at the top (like setup page)
+        def on_log_close():
+            self.top.destroy()
+            if self.reset_timer_callback:
+                self.reset_timer_callback()
+        close_btn_frame = Frame(self.top)
+        close_btn_frame.pack(side="top", fill="x", pady=8)
+        close_btn = Button(close_btn_frame, text="Close", command=on_log_close, font=("Arial", 11), bg="#f44336", fg="white", width=10, height=1)
+        close_btn.pack(pady=4)
+
         self.logs_by_date = ExerciseLogger.logs_by_date()
         self.dates = sorted(self.logs_by_date.keys(), reverse=True)
 
@@ -179,18 +189,7 @@ class ExerciseLogViewer:
             self._bind_mousewheel_to_widget(desc_label)
 
         # When log viewer is closed, reset timer
-        def on_log_close():
-            self.top.destroy()
-            if self.reset_timer_callback:
-                self.reset_timer_callback()
-        self.top.protocol("WM_DELETE_WINDOW", on_log_close)
-
-        # Add a visible Close button at the bottom
-        # Move Close button to the top
-        close_btn_frame = Frame(self.top)
-        close_btn_frame.pack(side="top", fill="x", pady=8)
-        close_btn = Button(close_btn_frame, text="Close", command=on_log_close, font=("Arial", 11), bg="#f44336", fg="white", width=10, height=1)
-        close_btn.pack(pady=4)
+        # (protocol assignment is now handled in __init__)
 # Example usage:
 # ExerciseLogger.log_exercise("/path/to/exercise.jpg", "Description", "Area", "Action")
 # viewer = ExerciseLogViewer(parent_window)
