@@ -422,207 +422,25 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         close_btn.pack(side="right", padx=(2,6), pady=4, fill="x", expand=True)
 
         # Gear icon button (ozubene kolecko)
-        def open_setup_page():
-            import tkinter
-            from tkinter import Canvas, Scrollbar, Checkbutton, IntVar
-            import json
+        from setup_page import open_setup_page
 
-            # Disable reminder window timer while setup is open
-            if timer_id[0]:
-                root.after_cancel(timer_id[0])
-                timer_id[0] = None
 
-            setup_win = tkinter.Toplevel(root)
-            setup_win.title("Personalize Exercises")
-            setup_win.geometry("600x600")
-            setup_win.resizable(False, False)
+        def cancel_timer():
+            try:
+                if timer_id[0]:
+                    root.after_cancel(timer_id[0])
+                    timer_id[0] = None
+            except Exception:
+                pass
 
-            # --- NEW LAYOUT: Top button row, scrollable exercise pane below ---
-
-            # Top button row frame
-            button_row = Frame(setup_win, background="#f0f0f0")
-            button_row.pack(side="top", fill="x", pady=(8,2))
-
-            # Select all / Deselect all buttons
-            select_all_btn = Button(button_row, text="Select all", font=("Arial", 11), width=10, height=1)
-            select_all_btn.pack(side="left", padx=(8,4))
-            deselect_all_btn = Button(button_row, text="Deselect all", font=("Arial", 11), width=12, height=1)
-            deselect_all_btn.pack(side="left", padx=(4,8))
-
-            # SAVE and CLOSE buttons
-            save_btn = Button(button_row, text="Save", font=("Arial", 11), bg="#4caf50", fg="white", width=10, height=1)
-            save_btn.pack(side="left", padx=(8,4))
-            close_btn = Button(button_row, text="Close", font=("Arial", 11), bg="#f44336", fg="white", width=10, height=1)
-            close_btn.pack(side="left", padx=(4,8))
-
-            save_label = Label(button_row, text="", font=("Arial", 11), background="#f0f0f0")
-            save_label.pack(side="left", padx=(8,4))
-
-            # Scrollable exercise pane below button row
-            canvas = Canvas(setup_win, borderwidth=0, background="#f0f0f0")
-            frame = Frame(canvas, background="#f0f0f0")
-            scrollbar = Scrollbar(setup_win, orient="vertical", command=canvas.yview)
-            canvas.configure(yscrollcommand=scrollbar.set)
-
-            canvas.pack(side="top", fill="both", expand=True)
-            scrollbar.pack(side="right", fill="y")
-            canvas.create_window((0,0), window=frame, anchor="nw")
-
-            def on_frame_configure(event):
-                canvas.configure(scrollregion=canvas.bbox("all"))
-            frame.bind("<Configure>", on_frame_configure)
-
-            # Mouse wheel scroll binding for canvas
-            def _on_mousewheel(event):
-                # Windows/Mac/Linux wheel event normalization
-                delta = event.delta if event.delta else (-120 if event.num == 5 else 120)
-                canvas.yview_scroll(int(-1*(delta/120)), "units")
-            canvas.bind_all("<MouseWheel>", _on_mousewheel)  # Windows/Mac
-            canvas.bind_all("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))  # Linux scroll up
-            canvas.bind_all("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))   # Linux scroll down
-
-            # Load personalized config if exists
-            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personalized_exercises.json")
-            selected_gifs = set()
-            if os.path.exists(config_path):
-                try:
-                    with open(config_path, "r", encoding="utf-8") as f:
-                        selected_gifs = set(json.load(f))
-                except Exception:
-                    selected_gifs = set()
-
-            # Load all exercises
-            gif_desc_map = load_gif_descriptions()
-            gif_files = [
-                os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/images/resized', f)
-                for f in os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/images/resized'))
-                if f.lower().endswith('.gif') and f in gif_desc_map.keys()
-            ]
-            gif_desc_map = load_gif_descriptions()
-
-            # Store checkbox variables and animation states
-            checkbox_vars = {}
-            anim_states = {}
-
-            # Helper to load gif frames for thumbnails
-            def load_gif_frames_for_thumb(gif_path):
-                """
-                Load GIF frames specifically for thumbnails on the Setup page.
-                """
-                img = Image.open(gif_path)
-                frames = []
-                thumb_height = 74
-                orig_width, orig_height = img.size
-                thumb_width = int(orig_width * (thumb_height / orig_height))
-                thumb_size = (thumb_width, thumb_height)
-                try:
-                    while True:
-                        thumb_img = img.copy().resize(thumb_size, Image.LANCZOS)
-                        frame = ImageTk.PhotoImage(thumb_img, master=setup_win)
-                        frames.append(frame)
-                        img.seek(len(frames))
-                except EOFError:
-                    pass
-                return frames, img.info.get('duration', 100)
-
-            # For each exercise, show animated thumbnail, description, checkbox
-            for idx, gif_path in enumerate(gif_files):
-                gif_name = os.path.basename(gif_path)
-                gif_info = gif_desc_map.get(gif_name, {})
-                desc = gif_info.get("description", "")
-                area = gif_info.get("area", "")
-                action = gif_info.get("action", "")
-
-                row_frame = Frame(frame, background="#f0f0f0", relief="groove", borderwidth=1)
-                row_frame.pack(fill="x", padx=4, pady=4)
-
-                # --- Horizontal layout: checkbox, GIF, description ---
-                content_row = Frame(row_frame, background="#f0f0f0")
-                content_row.pack(fill="x", padx=4, pady=4)
-
-                # Checkbox (left)
-                var = IntVar(value=1 if gif_name in selected_gifs else 0)
-                checkbox = Checkbutton(content_row, text="Include", variable=var, background="#f0f0f0", font=("Arial", 10))
-                checkbox.pack(side="left", anchor="n", padx=(0, 8), pady=4)
-                checkbox_vars[gif_name] = var
-
-                # Animated GIF thumbnail (middle)
-                try:
-                    thumb_frames, thumb_delay = load_gif_frames_for_thumb(gif_path)
-                except Exception:
-                    thumb_frames, thumb_delay = [], 100
-
-                thumb_label = Label(content_row, background="#f0f0f0")
-                thumb_label.pack(side="left", anchor="n", padx=(0, 8), pady=4)
-
-                # Animation state for thumbnail
-                anim_states[gif_name] = {"timer_id": None}
-
-                def animate_thumb(label, frames, delay, frame_idx=0, anim_state=None):
-                    if not frames:
-                        label.config(text="[GIF]")
-                        return
-                    frame = frames[frame_idx]
-                    label.config(image=frame)
-                    label.image = frame
-                    next_idx = (frame_idx + 1) % len(frames)
-                    if anim_state is not None:
-                        if anim_state["timer_id"]:
-                            label.after_cancel(anim_state["timer_id"])
-                        anim_state["timer_id"] = label.after(delay, animate_thumb, label, frames, delay, next_idx, anim_state)
-                    else:
-                        label.after(delay, animate_thumb, label, frames, delay, next_idx)
-
-                animate_thumb(thumb_label, thumb_frames, thumb_delay, 0, anim_states[gif_name])
-
-                # Description and info (right)
-                desc_text = f"{desc}\nArea: {area}\nAction: {action}"
-                # Adjust wraplength to fit within window (600px - checkbox - gif - padding)
-                desc_label = Label(
-                    content_row,
-                    text=desc_text,
-                    justify="left",
-                    wraplength=340,  # fits within 600px window
-                    background="#f0f0f0",
-                    font=("Arial", 11)
-                )
-                desc_label.pack(side="left", anchor="n", fill="y", padx=(0, 4), pady=4)
-                # Optionally, constrain content_row width to match canvas
-                content_row.config(width=580)
-
-            # Save button logic
-            def save_config():
-                selected = [name for name, var in checkbox_vars.items() if var.get() == 1]
-                try:
-                    with open(config_path, "w", encoding="utf-8") as f:
-                        json.dump(selected, f, indent=2)
-                    save_label.config(text="Saved!", fg="green")
-                    setup_win.after(300, setup_win.destroy)  # Close window after short delay
-                except Exception as e:
-                    save_label.config(text=f"Error: {e}", fg="red")
-
-            # Select all / Deselect all logic
-            def select_all():
-                for var in checkbox_vars.values():
-                    var.set(1)
-
-            def deselect_all():
-                for var in checkbox_vars.values():
-                    var.set(0)
-
-            # Bind button commands
-            select_all_btn.config(command=select_all)
-            deselect_all_btn.config(command=deselect_all)
-            save_btn.config(command=save_config)
-            def on_setup_close():
-                setup_win.destroy()
-                reset_timer()
-            close_btn.config(command=on_setup_close)
-
-            # When setup window closes, re-enable timer
-            setup_win.protocol("WM_DELETE_WINDOW", on_setup_close)
-
-        gear_btn = Button(button_frame, text="⚙️", command=open_setup_page, font=("Arial", 12), width=3, height=2)
+        gear_btn = Button(
+            button_frame,
+            text="⚙️",
+            command=lambda: open_setup_page(root, reset_timer, cancel_timer),
+            font=("Arial", 12),
+            width=3,
+            height=2
+        )
         gear_btn.pack(side="right", padx=(2,2), pady=4)
 
         root.mainloop()
