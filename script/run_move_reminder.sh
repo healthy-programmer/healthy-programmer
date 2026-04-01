@@ -101,6 +101,12 @@ if ! $PYTHON -c "from PIL import Image" >/dev/null 2>&1; then
     $PYTHON -m pip install --user --upgrade pillow
 fi
 
-# 4. Run the script
+# 4. Ensure tkcalendar is installed for this Python
+if ! $PYTHON -c "import tkcalendar" >/dev/null 2>&1; then
+    echo "tkcalendar not found, installing with pip..."
+    $PYTHON -m pip install --user --upgrade tkcalendar
+fi
+
+# 5. Run the script
 echo "Running move_reminder.py ..."
 "$PYTHON" "$(dirname "$0")/move_reminder.py" "$@"

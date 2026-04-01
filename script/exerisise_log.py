@@ -7,6 +7,12 @@ from tkinter import messagebox
 from tkinter import Tk
 from PIL import Image, ImageTk
 
+# Try to import tkcalendar, prompt if missing
+try:
+    from tkcalendar import Calendar
+except ImportError:
+    Calendar = None
+
 LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "exercise_log.log")
 
 class ExerciseLogger:
@@ -97,11 +103,44 @@ class ExerciseLogViewer:
         cal_frame.pack(side="top", fill="x", padx=10, pady=10)
 
         Label(cal_frame, text="Select a day:", font=("Arial", 13, "bold")).pack(side="left", padx=5)
-        self.date_listbox = Listbox(cal_frame, height=10, width=15, font=("Arial", 12))
-        for date in self.dates:
-            self.date_listbox.insert("end", date)
-        self.date_listbox.pack(side="left", padx=5)
-        self.date_listbox.bind("<<ListboxSelect>>", self.on_date_select)
+
+        if Calendar is None:
+            Label(cal_frame, text="tkcalendar not installed.\nRun 'pip install tkcalendar' to enable calendar view.", fg="red", font=("Arial", 12)).pack(side="left", padx=5)
+            # Fallback to Listbox
+            self.date_listbox = Listbox(cal_frame, height=10, width=15, font=("Arial", 12))
+            for date in self.dates:
+                self.date_listbox.insert("end", date)
+            self.date_listbox.pack(side="left", padx=5)
+            self.date_listbox.bind("<<ListboxSelect>>", self.on_date_select)
+        else:
+            # Use tkcalendar.Calendar
+            self.calendar = Calendar(
+                cal_frame,
+                selectmode="day",
+                year=datetime.now().year,
+                month=datetime.now().month,
+                day=datetime.now().day,
+                date_pattern="yyyy-mm-dd",
+                font=("Arial", 12),
+                background="#ffffff",
+                foreground="#000000",
+                headersbackground="#e0e0e0",
+                headersforeground="#333333",
+                weekendbackground="#f0f0f0",
+                weekendforeground="#888888",
+                bordercolor="#cccccc",
+                selectbackground="#2196f3",
+                selectforeground="#ffffff",
+                showweeknumbers=False,
+                showothermonthdays=True,
+                firstweekday="monday"
+            )
+            self.calendar.pack(side="left", padx=5)
+            # Mark days with logs in green
+            for date in self.dates:
+                self.calendar.calevent_create(datetime.strptime(date, "%Y-%m-%d"), "Logged", "log")
+            self.calendar.tag_config("log", background="#43a047", foreground="#ffffff")
+            self.calendar.bind("<<CalendarSelected>>", self.on_calendar_select)
 
     def create_log_list(self):
         self.log_frame = Frame(self.top)
@@ -140,6 +179,13 @@ class ExerciseLogViewer:
             return
         idx = selection[0]
         date = self.dates[idx]
+        self.selected_date = date
+        self.show_logs_for_date(date)
+
+    def on_calendar_select(self, event):
+        if Calendar is None:
+            return
+        date = self.calendar.get_date()
         self.selected_date = date
         self.show_logs_for_date(date)
 
