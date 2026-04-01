@@ -80,7 +80,7 @@ class ExerciseLogViewer:
         close_btn_frame = Frame(self.top)
         close_btn_frame.pack(side="top", fill="x", pady=8)
         close_btn = Button(close_btn_frame, text="Close", command=on_log_close, font=("Arial", 11), bg="#f44336", fg="white", width=10, height=1)
-        close_btn.pack(pady=4)
+        close_btn.pack(side="right", padx=10, pady=4)
 
         self.logs_by_date = ExerciseLogger.logs_by_date()
         self.dates = sorted(self.logs_by_date.keys(), reverse=True)
@@ -89,14 +89,22 @@ class ExerciseLogViewer:
         self.create_log_list()
         self.selected_date = None
 
-        # Mouse wheel binding helper
-        def _bind_mousewheel_to_widget(widget):
-            # Windows/Mac: bind to widget
-            widget.bind("<MouseWheel>", lambda e: self.log_canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
-            # Linux: bind to widget
-            widget.bind("<Button-4>", lambda e: self.log_canvas.yview_scroll(-1, "units"))
-            widget.bind("<Button-5>", lambda e: self.log_canvas.yview_scroll(1, "units"))
-        self._bind_mousewheel_to_widget = _bind_mousewheel_to_widget
+        # Show today's logs by default
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        if Calendar is not None and hasattr(self, "calendar"):
+            self.calendar.selection_set(today_str)
+            self.selected_date = today_str
+            self.show_logs_for_date(today_str)
+        elif hasattr(self, "date_listbox"):
+            if today_str in self.dates:
+                idx = self.dates.index(today_str)
+                self.date_listbox.selection_clear(0, "end")
+                self.date_listbox.selection_set(idx)
+                self.date_listbox.activate(idx)
+                self.selected_date = today_str
+                self.show_logs_for_date(today_str)
+
+        # Mouse wheel binding helper is now a class method (see below)
 
     def create_calendar(self):
         cal_frame = Frame(self.top)
@@ -203,7 +211,8 @@ class ExerciseLogViewer:
         for log in logs:
             row = Frame(self.log_inner, background="#e8f5e9", relief="groove", borderwidth=1)
             row.pack(fill="x", padx=4, pady=6)
-            # Thumbnail
+
+            # Column 1: GIF/Image
             img_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../exercise/images", log["image"])
             thumb = None
             if os.path.exists(img_path):
@@ -216,26 +225,43 @@ class ExerciseLogViewer:
             if thumb:
                 img_label = Label(row, image=thumb, background="#e8f5e9")
                 img_label.image = thumb
-                img_label.pack(side="left", padx=8, pady=8)
             else:
                 img_label = Label(row, text="[Image]", background="#e8f5e9")
-                img_label.pack(side="left", padx=8, pady=8)
-            # Description with timestamp (HH:MM)
+            img_label.grid(row=0, column=0, padx=8, pady=8, sticky="w")
+
+            # Column 2: Description
+            desc_text = f"{log['description']}\nArea: {log['area']}\nAction: {log['action']}"
+            desc_label = Label(row, text=desc_text, justify="left", wraplength=400, background="#e8f5e9", font=("Arial", 11))
+            desc_label.grid(row=0, column=1, padx=8, pady=8, sticky="w")
+
+            # Column 3: Time of execution
             dt_str = log['datetime']
             try:
                 time_str = dt_str.split(" ")[1][:5]  # HH:MM
             except Exception:
                 time_str = ""
-            desc_text = f"{log['description']}\nArea: {log['area']}\nAction: {log['action']}\nTime: {time_str}"
-            desc_label = Label(row, text=desc_text, justify="left", wraplength=400, background="#e8f5e9", font=("Arial", 11))
-            desc_label.pack(side="left", padx=8, pady=8)
+            time_label = Label(row, text=time_str, background="#e8f5e9", font=("Arial", 12, "bold"), fg="#333333", width=8, anchor="e")
+            time_label.grid(row=0, column=2, padx=8, pady=8, sticky="e")
+
             # Bind mouse wheel events to row and its children
             self._bind_mousewheel_to_widget(row)
             self._bind_mousewheel_to_widget(img_label)
             self._bind_mousewheel_to_widget(desc_label)
+            self._bind_mousewheel_to_widget(time_label)
 
         # When log viewer is closed, reset timer
         # (protocol assignment is now handled in __init__)
+
+        # Scroll to the bottom of the log list
+        self.log_canvas.update_idletasks()
+        self.log_canvas.yview_moveto(1.0)
+
+    def _bind_mousewheel_to_widget(self, widget):
+        # Windows/Mac: bind to widget
+        widget.bind("<MouseWheel>", lambda e: self.log_canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
+        # Linux: bind to widget
+        widget.bind("<Button-4>", lambda e: self.log_canvas.yview_scroll(-1, "units"))
+        widget.bind("<Button-5>", lambda e: self.log_canvas.yview_scroll(1, "units"))
 # Example usage:
 # ExerciseLogger.log_exercise("/path/to/exercise.jpg", "Description", "Area", "Action")
 # viewer = ExerciseLogViewer(parent_window)
