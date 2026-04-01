@@ -88,12 +88,13 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
         canvas.configure(scrollregion=canvas.bbox("all"))
     frame.bind("<Configure>", on_frame_configure)
 
-    def _on_mousewheel(event):
-        delta = event.delta if event.delta else (-120 if event.num == 5 else 120)
-        canvas.yview_scroll(int(-1*(delta/120)), "units")
-    canvas.bind("<MouseWheel>", _on_mousewheel)
-    canvas.bind("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
-    canvas.bind("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))
+    # Mouse wheel binding helper (unified with log screen)
+    def _bind_mousewheel_to_widget(widget):
+        widget.bind("<MouseWheel>", lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
+        widget.bind("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
+        widget.bind("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))
+    # Also bind to the main window for global scroll
+    setup_win.bind_all("<MouseWheel>", lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
 
     config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personalized_exercises.json")
     selected_gifs = set()
@@ -242,6 +243,13 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
         )
         desc_label.pack(side="left", anchor="n", fill="y", padx=(0, 4), pady=4)
         content_row.config(width=580)
+
+        # Bind mouse wheel events to all widgets for unified scroll
+        _bind_mousewheel_to_widget(row_frame)
+        _bind_mousewheel_to_widget(content_row)
+        _bind_mousewheel_to_widget(checkbox)
+        _bind_mousewheel_to_widget(thumb_label)
+        _bind_mousewheel_to_widget(desc_label)
 
         gif_row_data.append({
             "gif_name": gif_name,

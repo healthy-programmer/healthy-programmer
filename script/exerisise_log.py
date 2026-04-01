@@ -67,6 +67,15 @@ class ExerciseLogViewer:
         self.create_log_list()
         self.selected_date = None
 
+        # Mouse wheel binding helper
+        def _bind_mousewheel_to_widget(widget):
+            # Windows/Mac: bind to widget
+            widget.bind("<MouseWheel>", lambda e: self.log_canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
+            # Linux: bind to widget
+            widget.bind("<Button-4>", lambda e: self.log_canvas.yview_scroll(-1, "units"))
+            widget.bind("<Button-5>", lambda e: self.log_canvas.yview_scroll(1, "units"))
+        self._bind_mousewheel_to_widget = _bind_mousewheel_to_widget
+
     def create_calendar(self):
         cal_frame = Frame(self.top)
         cal_frame.pack(side="top", fill="x", padx=10, pady=10)
@@ -90,6 +99,25 @@ class ExerciseLogViewer:
         self.log_canvas.create_window((0,0), window=self.log_inner, anchor="nw")
         self.log_inner.bind("<Configure>", lambda e: self.log_canvas.configure(scrollregion=self.log_canvas.bbox("all")))
 
+        # Mouse wheel support for scrolling (cross-platform)
+        def _on_mousewheel(event):
+            # Windows/Mac: event.delta, Linux: event.num
+            if hasattr(event, "delta"):
+                # Windows: delta is multiples of 120, Mac: delta is small values
+                self.log_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+            elif hasattr(event, "num"):
+                if event.num == 4:
+                    self.log_canvas.yview_scroll(-1, "units")
+                elif event.num == 5:
+                    self.log_canvas.yview_scroll(1, "units")
+        # Windows/Mac: bind_all to catch mouse wheel regardless of focus
+        self.top.bind_all("<MouseWheel>", _on_mousewheel)
+        # Linux: bind to both canvas and inner frame
+        self.log_canvas.bind("<Button-4>", lambda e: self.log_canvas.yview_scroll(-1, "units"))
+        self.log_canvas.bind("<Button-5>", lambda e: self.log_canvas.yview_scroll(1, "units"))
+        self.log_inner.bind("<Button-4>", lambda e: self.log_canvas.yview_scroll(-1, "units"))
+        self.log_inner.bind("<Button-5>", lambda e: self.log_canvas.yview_scroll(1, "units"))
+
     def on_date_select(self, event):
         selection = self.date_listbox.curselection()
         if not selection:
@@ -105,7 +133,10 @@ class ExerciseLogViewer:
             widget.destroy()
         logs = self.logs_by_date.get(date, [])
         if not logs:
-            Label(self.log_inner, text="No exercises logged for this day.", font=("Arial", 12)).pack(pady=10)
+            label = Label(self.log_inner, text="No exercises logged for this day.", font=("Arial", 12))
+            label.pack(pady=10)
+            # Bind mouse wheel events to label
+            self._bind_mousewheel_to_widget(label)
             return
         for log in logs:
             row = Frame(self.log_inner, background="#e8f5e9", relief="groove", borderwidth=1)
@@ -131,6 +162,10 @@ class ExerciseLogViewer:
             desc_text = f"{log['description']}\nArea: {log['area']}\nAction: {log['action']}"
             desc_label = Label(row, text=desc_text, justify="left", wraplength=400, background="#e8f5e9", font=("Arial", 11))
             desc_label.pack(side="left", padx=8, pady=8)
+            # Bind mouse wheel events to row and its children
+            self._bind_mousewheel_to_widget(row)
+            self._bind_mousewheel_to_widget(img_label)
+            self._bind_mousewheel_to_widget(desc_label)
 
 # Example usage:
 # ExerciseLogger.log_exercise("/path/to/exercise.jpg", "Description", "Area", "Action")
