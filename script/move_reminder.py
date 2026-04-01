@@ -9,6 +9,8 @@ import threading
 import csv
 import json
 
+from datetime import datetime
+
 try:
     from tkinter import Tk, Label
 except ImportError:
@@ -519,7 +521,7 @@ def main():
             description = gif_info.get("description", "")
             area = gif_info.get("area", "")
             action = gif_info.get("action", "")
-            print(f"Showing: {gif_name}")
+            print(f"[{datetime.now():%Y-%m-%d %H:%M:%S}] Showing: {gif_name}")
             if description:
                 print(f"Description: {description}")
             if area:
