@@ -1,5 +1,18 @@
 #+TITLE: Healthy Programmer
 
+What is this project NOT about? Let’s be clear: this is not a step-by-step guide to mastering the perfect
+handstand or flipping flawless pancakes. If you’re looking for acrobatic tricks or culinary skills,
+YouTube is overflowing with tutorials and expert videos for that.
+
+Instead, this project is a collection of exercises I’ve personally practiced and refined over the past seven years.
+My goal wasn’t to impress anyone, but to eliminate back pain and get rid of stiffness in my shoulders, ankles, and wrists.
+These are real routines that helped me move better, feel stronger, and stay pain-free—no magic, no shortcuts,
+just practical movement.
+
+You won’t find flashy poses or impossible challenges here. What you will find are simple, effective exercises that actually work,
+based on my own experience. If you’re tired of feeling stiff or achy, and want to improve your mobility without
+chasing perfection, you’re in the right place.
+
 [[./exercise/images/move-reminder-screenshot.png]]
 
 This project is actively growing—new exercises and routines are added every week to help you stay healthy and pain-free at your desk.
