@@ -10,6 +10,7 @@ def load_gif_descriptions(data_md_path):
     current_gif = None
     area = None
     action = None
+    category = None
     desc_lines = []
     with open(data_md_path, encoding='utf-8') as mdfile:
         for line in mdfile:
@@ -19,17 +20,21 @@ def load_gif_descriptions(data_md_path):
                     mapping[current_gif] = {
                         "description": '\n'.join(desc_lines).strip(),
                         "area": area,
-                        "action": action
+                        "action": action,
+                        "category": category
                     }
                 current_gif = line[3:].strip()
                 area = None
                 action = None
+                category = None
                 desc_lines = []
             elif current_gif is not None:
                 if line.startswith('**Area:**'):
                     area = line.split('**Area:**', 1)[1].strip().strip()
                 elif line.startswith('**Action:**'):
                     action = line.split('**Action:**', 1)[1].strip().strip()
+                elif line.startswith('**Category:**'):
+                    category = line.split('**Category:**', 1)[1].strip().strip()
                 elif line.strip() == '':
                     continue
                 else:
@@ -39,7 +44,8 @@ def load_gif_descriptions(data_md_path):
             mapping[current_gif] = {
                 "description": '\n'.join(desc_lines).strip(),
                 "area": area,
-                "action": action
+                "action": action,
+                "category": category
             }
     return mapping
 
@@ -99,6 +105,36 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
             selected_gifs = set()
 
     gif_desc_map = load_gif_descriptions(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/reminder-data.md'))
+
+    # Extract unique categories
+    categories = set()
+    for gif_info in gif_desc_map.values():
+        cat = gif_info.get("category")
+        if cat:
+            categories.add(cat)
+    categories = sorted(categories)
+
+    # Category filter state
+    category_vars = {cat: IntVar(value=1) for cat in categories}
+
+    # Category filter UI
+    category_row = Frame(setup_win, background="#e0e0e0")
+    category_row.pack(side="top", fill="x", pady=(2,2))
+    Label(category_row, text="Filter by category:", font=("Arial", 11), background="#e0e0e0").pack(side="left", padx=(8,4))
+    for cat in categories:
+        cb = Checkbutton(category_row, text=cat, variable=category_vars[cat], background="#e0e0e0", font=("Arial", 10))
+        cb.pack(side="left", padx=(2,2))
+    def select_all_categories():
+        for var in category_vars.values():
+            var.set(1)
+        update_gif_rows()
+    def deselect_all_categories():
+        for var in category_vars.values():
+            var.set(0)
+        update_gif_rows()
+    Button(category_row, text="Select all", command=select_all_categories, font=("Arial", 10), width=8).pack(side="left", padx=(8,2))
+    Button(category_row, text="Deselect all", command=deselect_all_categories, font=("Arial", 10), width=10).pack(side="left", padx=(2,8))
+
     gif_files = [
         os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/images/resized', f)
         for f in os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/images/resized'))
@@ -141,15 +177,18 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
             pass
         return frames, img.info.get('duration', 100)
 
-    for idx, gif_path in enumerate(gif_files):
+    # Store GIF row widgets for filtering
+    gif_row_data = []
+
+    def create_gif_row(gif_path):
         gif_name = os.path.basename(gif_path)
         gif_info = gif_desc_map.get(gif_name, {})
         desc = gif_info.get("description", "")
         area = gif_info.get("area", "")
         action = gif_info.get("action", "")
+        category = gif_info.get("category", "")
 
         row_frame = Frame(frame, background="#f0f0f0", relief="groove", borderwidth=1)
-        row_frame.pack(fill="x", padx=4, pady=4)
         row_frames[gif_name] = row_frame
 
         content_row = Frame(row_frame, background="#f0f0f0")
@@ -192,7 +231,7 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
 
         animate_thumb(thumb_label, thumb_frames, thumb_delay, 0, anim_states[gif_name])
 
-        desc_text = f"{desc}\nArea: {area}\nAction: {action}"
+        desc_text = f"{desc}\nArea: {area}\nAction: {action}\nCategory: {category}"
         desc_label = Label(
             content_row,
             text=desc_text,
@@ -203,6 +242,32 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
         )
         desc_label.pack(side="left", anchor="n", fill="y", padx=(0, 4), pady=4)
         content_row.config(width=580)
+
+        gif_row_data.append({
+            "gif_name": gif_name,
+            "category": category,
+            "row_frame": row_frame,
+        })
+
+        return row_frame
+
+    def update_gif_rows():
+        # Remove all rows
+        for data in gif_row_data:
+            data["row_frame"].pack_forget()
+        # Show only rows matching selected categories
+        selected_cats = {cat for cat, var in category_vars.items() if var.get() == 1}
+        for data in gif_row_data:
+            if data["category"] in selected_cats:
+                data["row_frame"].pack(fill="x", padx=4, pady=4)
+
+    # Create GIF rows
+    for idx, gif_path in enumerate(gif_files):
+        create_gif_row(gif_path)
+
+    # Initial filter
+    update_gif_rows()
+
 
     def save_config():
         selected = [name for name, var in checkbox_vars.items() if var.get() == 1]
@@ -237,3 +302,7 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     setup_win.protocol("WM_DELETE_WINDOW", on_setup_close)
     update_selected_count()
     update_row_backgrounds()
+
+    # Update GIF rows when category filter changes
+    for var in category_vars.values():
+        var.trace_add("write", lambda *args: update_gif_rows())
