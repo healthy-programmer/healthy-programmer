@@ -450,9 +450,9 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             deselect_all_btn.pack(side="left", padx=(4,8))
 
             # SAVE and CLOSE buttons
-            save_btn = Button(button_row, text="SAVE", font=("Arial", 12), bg="#4caf50", fg="white", width=10, height=2)
+            save_btn = Button(button_row, text="Save", font=("Arial", 11), bg="#4caf50", fg="white", width=10, height=1)
             save_btn.pack(side="left", padx=(8,4))
-            close_btn = Button(button_row, text="CLOSE", font=("Arial", 12), bg="#f44336", fg="white", width=10, height=2)
+            close_btn = Button(button_row, text="Close", font=("Arial", 11), bg="#f44336", fg="white", width=10, height=1)
             close_btn.pack(side="left", padx=(4,8))
 
             save_label = Label(button_row, text="", font=("Arial", 11), background="#f0f0f0")
