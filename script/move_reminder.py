@@ -492,7 +492,12 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
                     selected_gifs = set()
 
             # Load all exercises
-            gif_files = get_gif_files()
+            gif_desc_map = load_gif_descriptions()
+            gif_files = [
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/images/resized', f)
+                for f in os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/images/resized'))
+                if f.lower().endswith('.gif') and f in gif_desc_map.keys()
+            ]
             gif_desc_map = load_gif_descriptions()
 
             # Store checkbox variables and animation states
@@ -501,6 +506,9 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
 
             # Helper to load gif frames for thumbnails
             def load_gif_frames_for_thumb(gif_path):
+                """
+                Load GIF frames specifically for thumbnails on the Setup page.
+                """
                 img = Image.open(gif_path)
                 frames = []
                 thumb_height = 74
