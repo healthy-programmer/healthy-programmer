@@ -9,7 +9,7 @@ import threading
 import csv
 import json
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 try:
     from tkinter import Tk, Label
@@ -514,6 +514,7 @@ def main():
     print("Press Ctrl+C to stop.")
 
     try:
+        log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../exercise/reminder-log.txt")
         while True:
             gif_path = random.choice(gif_files)
             gif_name = os.path.basename(gif_path)
@@ -534,7 +535,18 @@ def main():
                 duration=args.duration,
                 position=args.position
             )
-            time.sleep(args.interval * 60)
+            # Calculate next reminder time
+            next_reminder_time = datetime.now() + timedelta(minutes=args.interval)
+            seconds_remaining = args.interval * 60
+            while seconds_remaining > 0:
+                now = datetime.now()
+                time_left = next_reminder_time - now
+                minutes_left = int(time_left.total_seconds() // 60)
+                seconds_left = int(time_left.total_seconds() % 60)
+                print(f"[DEBUG] Time to next exercise: {minutes_left}m {seconds_left}s")
+                sleep_time = min(60, seconds_remaining)
+                time.sleep(sleep_time)
+                seconds_remaining -= sleep_time
     except KeyboardInterrupt:
         print("\nMove reminder stopped.")
 
