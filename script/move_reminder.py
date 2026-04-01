@@ -21,14 +21,44 @@ except ImportError:
     sys.exit(1)
 
 GIF_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/images')
-DATA_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/reminder-data.csv')
+DATA_MD = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/reminder-data.md')
 
 def load_gif_descriptions():
     mapping = {}
-    with open(DATA_CSV, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            mapping[row['gif_filename']] = row['description']
+    current_gif = None
+    area = None
+    action = None
+    desc_lines = []
+    with open(DATA_MD, encoding='utf-8') as mdfile:
+        for line in mdfile:
+            line = line.rstrip('\n')
+            if line.startswith('## '):
+                if current_gif:
+                    mapping[current_gif] = {
+                        "description": '\n'.join(desc_lines).strip(),
+                        "area": area,
+                        "action": action
+                    }
+                current_gif = line[3:].strip()
+                area = None
+                action = None
+                desc_lines = []
+            elif current_gif is not None:
+                if line.startswith('**Area:**'):
+                    area = line.split('**Area:**', 1)[1].strip().strip()
+                elif line.startswith('**Action:**'):
+                    action = line.split('**Action:**', 1)[1].strip().strip()
+                elif line.strip() == '':
+                    continue
+                else:
+                    desc_lines.append(line)
+        # Add last gif
+        if current_gif:
+            mapping[current_gif] = {
+                "description": '\n'.join(desc_lines).strip(),
+                "area": area,
+                "action": action
+            }
     return mapping
 
 def get_gif_files():
@@ -106,6 +136,8 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         current = {
             "gif_path": gif_path,
             "description": description,
+            "area": gif_desc_map.get(os.path.basename(gif_path), {}).get("area", ""),
+            "action": gif_desc_map.get(os.path.basename(gif_path), {}).get("action", ""),
             "frames": [],
             "delay": 100,
             "width": 0,
@@ -143,27 +175,40 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         desc_max_height = 500
         desc_width = width
 
+        area_action_height = 80  # Increased estimate for area/action labels
+        button_height = 70  # Slightly increased for two buttons
+        desc_min_height = 60
+        desc_max_height = 500
+        desc_width = width
+
         wrapped = textwrap.wrap(current["description"], width=50)
         desc_height = max(desc_min_height, min(desc_max_height, 20 * len(wrapped))) if current["description"] else 0
-        # Button height estimate (extended for larger button)
-        button_height = 60
 
-        # Calculate total height needed
-        total_height = height + desc_height + button_height
+        # Calculate available height for GIF after reserving space for area/action, description, and buttons
+        reserved_height = area_action_height + desc_height + button_height
+        max_gif_height = screen_height - reserved_height
+        display_height = min(height, max_gif_height)
+        total_height = area_action_height + display_height + desc_height + button_height
 
-        # If total height exceeds screen, shrink text widget and enable scrolling
-        if total_height > screen_height:
-            # Always reserve space for button and minimum text height
-            available = screen_height - height
-            if available < desc_min_height + button_height:
-                # GIF is too tall, force minimums and let text scroll
-                desc_height = desc_min_height
-                total_height = height + desc_height + button_height
-            else:
-                desc_height = available - button_height
-                total_height = height + desc_height + button_height
+        # If GIF is too tall, scale it down
+        if height > max_gif_height:
+            scale = max_gif_height / height
+            display_width = int(width * scale)
+            subsample_factor = int(height / max_gif_height)
+        else:
+            display_width = width
+            subsample_factor = 1
 
-        root.geometry(f"{width}x{total_height}+{x}+{y}")
+        # Enforce minimum window width for buttons
+        min_window_width = 350
+        window_width = max(display_width, min_window_width)
+
+        # Adjust x position for centered GIF if window is wider than GIF
+        if window_width > display_width:
+            x = x - ((window_width - display_width) // 2)
+
+        # Resize window to fit everything
+        root.geometry(f"{window_width}x{total_height}+{x}+{y}")
         root.resizable(False, False)
         root.attributes("-topmost", True)
         try:
@@ -171,8 +216,37 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         except Exception:
             pass
 
+        # Area and Action labels
+        area_label = Label(
+            root,
+            text=f"Area: {current['area']}",
+            font=("Arial", 14, "bold"),
+            bg="white",
+            anchor="w",
+            justify="left",
+            wraplength=window_width-10
+        )
+        area_label.pack(fill="x", padx=5, pady=(5,0))
+        action_label = Label(
+            root,
+            text=f"Action: {current['action']}",
+            font=("Arial", 13),
+            bg="white",
+            anchor="w",
+            justify="left",
+            wraplength=window_width-10
+        )
+        action_label.pack(fill="x", padx=5, pady=(0,5))
+
         label = Label(root)
         label.pack()
+        # If GIF is scaled, resize frames
+        if subsample_factor > 1:
+            resized_frames = []
+            for frame in current["frames"]:
+                img = frame.subsample(subsample_factor, subsample_factor)
+                resized_frames.append(img)
+            current["frames"] = resized_frames
 
         # Animation state for GIF
         anim_state = {"timer_id": None}
@@ -193,10 +267,9 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         text_widget.config(state="disabled")
         text_widget.pack(side="left", fill=BOTH, expand=True)
         # Always add scrollbar if text is long or window is shrunk
-        if len(wrapped) > desc_height // 20 or total_height > screen_height or desc_height == desc_max_height:
-            scrollbar = Scrollbar(desc_frame, command=text_widget.yview)
-            text_widget.config(yscrollcommand=scrollbar.set)
-            scrollbar.pack(side=RIGHT, fill=Y)
+        scrollbar = Scrollbar(desc_frame, command=text_widget.yview)
+        text_widget.config(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side=RIGHT, fill=Y)
 
         # Timer logic
         timer_id = [None]
@@ -215,7 +288,10 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
                 return
             new_gif = random.choice(available)
             new_name = os.path.basename(new_gif)
-            new_desc = gif_desc_map.get(new_name, "")
+            gif_info = gif_desc_map.get(new_name, {})
+            new_desc = gif_info.get("description", "")
+            new_area = gif_info.get("area", "")
+            new_action = gif_info.get("action", "")
             # Log the description for debugging
             print(f"[DEBUG] Next exercise: {new_name}, description: '{new_desc}'")
             # If description is empty or suspicious, set a default
@@ -226,30 +302,71 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             if not frames:
                 return
             # Estimate new description height
+            area_action_height = 80
+            button_height = 70
+            desc_min_height = 60
+            desc_max_height = 500
+            desc_width = width
             wrapped = textwrap.wrap(new_desc, width=50)
             desc_height = max(desc_min_height, min(desc_max_height, 20 * len(wrapped))) if new_desc else desc_min_height
-            button_height = 60
-            total_height = height + desc_height + button_height
+
+            reserved_height = area_action_height + desc_height + button_height
+            max_gif_height = root.winfo_screenheight() - reserved_height
+            display_height = min(height, max_gif_height)
+            total_height = area_action_height + display_height + desc_height + button_height
+
+            if height > max_gif_height:
+                scale = max_gif_height / height
+                display_width = int(width * scale)
+            else:
+                display_width = width
+
+            # Enforce minimum window width for buttons
+            min_window_width = 350
+            window_width = max(display_width, min_window_width)
+
+            # Calculate position (recompute x, y)
+            screen_width = root.winfo_screenwidth()
             screen_height = root.winfo_screenheight()
-            if total_height > screen_height:
-                available = screen_height - height
-                if available < desc_min_height + button_height:
-                    desc_height = desc_min_height
-                    total_height = height + desc_height + button_height
-                else:
-                    desc_height = available - button_height
-                    total_height = height + desc_height + button_height
-            # Resize window
-            root.geometry(f"{width}x{total_height}+{x}+{y}")
+            if position == "top-left":
+                x, y = 0, 0
+            elif position == "top-right":
+                x = screen_width - window_width
+                y = 0
+            elif position == "bottom-left":
+                x = 0
+                y = screen_height - total_height
+            elif position == "center":
+                x = (screen_width - window_width) // 2
+                y = (screen_height - total_height) // 2
+            else:  # bottom-right (default)
+                x = screen_width - window_width
+                y = screen_height - total_height
+
+            root.geometry(f"{window_width}x{total_height}+{x}+{y}")
+
             # Update state
             current["gif_path"] = new_gif
             current["description"] = new_desc
+            current["area"] = new_area
+            current["action"] = new_action
             current["frames"] = frames
             current["delay"] = delay
             current["width"] = width
             current["height"] = height
             # Cancel previous animation and start new one
             animate_gif(label, frames, delay, 0, anim_state)
+            # If GIF is scaled, resize frames
+            if subsample_factor > 1:
+                resized_frames = []
+                for frame in frames:
+                    img = frame.subsample(subsample_factor, subsample_factor)
+                    resized_frames.append(img)
+                current["frames"] = resized_frames
+                animate_gif(label, resized_frames, delay, 0, anim_state)
+            # Update area and action labels
+            area_label.config(text=f"Area: {new_area}", wraplength=window_width-10)
+            action_label.config(text=f"Action: {new_action}", wraplength=window_width-10)
             # Update description
             text_widget.config(state="normal")
             text_widget.delete("1.0", "end")
@@ -258,7 +375,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             # Update text widget height
             text_widget.config(height=int(desc_height/20))
             # Add scrollbar if needed
-            if len(wrapped) > desc_height // 20 or total_height > screen_height or desc_height == desc_max_height:
+            if len(wrapped) > desc_height // 20 or total_height > root.winfo_screenheight() or desc_height == desc_max_height:
                 if not any(isinstance(w, Scrollbar) for w in desc_frame.winfo_children()):
                     scrollbar = Scrollbar(desc_frame, command=text_widget.yview)
                     text_widget.config(yscrollcommand=scrollbar.set)
@@ -266,8 +383,15 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             # Reset timer
             reset_timer()
 
-        btn = Button(root, text="Next exercise", command=next_exercise, font=("Arial", 16), height=2)
-        btn.pack(side="bottom", pady=12, padx=8)
+        # Button frame at the bottom for both buttons
+        button_frame = Frame(root)
+        button_frame.pack(side="bottom", fill="x", pady=8)
+
+        btn = Button(button_frame, text="Next", command=next_exercise, font=("Arial", 10), width=6, height=2)
+        btn.pack(side="left", padx=(6,2), pady=4, fill="x", expand=True)
+
+        close_btn = Button(button_frame, text="Close", command=root.destroy, font=("Arial", 10), width=6, height=2)
+        close_btn.pack(side="right", padx=(2,6), pady=4, fill="x", expand=True)
 
         root.mainloop()
 
@@ -328,11 +452,23 @@ def main():
         while True:
             gif_path = random.choice(gif_files)
             gif_name = os.path.basename(gif_path)
-            description = gif_desc_map.get(gif_name, "")
+            gif_info = gif_desc_map.get(gif_name, {})
+            description = gif_info.get("description", "")
+            area = gif_info.get("area", "")
+            action = gif_info.get("action", "")
             print(f"Showing: {gif_name}")
             if description:
                 print(f"Description: {description}")
-            show_gif(gif_path, description=description, duration=args.duration, position=args.position)
+            if area:
+                print(f"Area: {area}")
+            if action:
+                print(f"Action: {action}")
+            show_gif(
+                gif_path,
+                description=description,
+                duration=args.duration,
+                position=args.position
+            )
             time.sleep(args.interval * 60)
     except KeyboardInterrupt:
         print("\nMove reminder stopped.")
