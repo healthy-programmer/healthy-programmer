@@ -260,6 +260,10 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
         for data in gif_row_data:
             if data["category"] in selected_cats:
                 data["row_frame"].pack(fill="x", padx=4, pady=4)
+        # Force scroll to top and update scrollregion
+        canvas.update_idletasks()
+        canvas.yview_moveto(0)
+        canvas.configure(scrollregion=canvas.bbox("all"))
 
     # Create GIF rows
     for idx, gif_path in enumerate(gif_files):
