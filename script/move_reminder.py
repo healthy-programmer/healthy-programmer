@@ -276,8 +276,12 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         timer_id = [None]
 
         def reset_timer():
-            if timer_id[0]:
-                root.after_cancel(timer_id[0])
+            # Always cancel previous timer and set a new one
+            try:
+                if timer_id[0]:
+                    root.after_cancel(timer_id[0])
+            except Exception:
+                pass
             timer_id[0] = root.after(duration * 1000, root.destroy)
 
         reset_timer()
@@ -306,11 +310,9 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
 
             # Pick a new random gif (not the current one) ONLY from checked (included) exercises
             available = [f for f in gif_files if f != current["gif_path"] and os.path.basename(f) in personalized_gifs]
-            # If personalized_gifs is not empty and available is empty, fallback to all except current
-            if personalized_gifs and not available:
-                available = [f for f in gif_files if f != current["gif_path"]]
+            # Only show exercises in personalized_gifs; if only one is available, do nothing
             if not available:
-                print("[DEBUG] No available exercises to choose from.")
+                print("[DEBUG] No available personalized exercises to choose from.")
                 return
             new_gif = random.choice(available)
             new_name = os.path.basename(new_gif)
@@ -433,7 +435,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             setup_win = tkinter.Toplevel(root)
             setup_win.title("Personalize Exercises")
             setup_win.geometry("600x600")
-            setup_win.resizable(True, True)
+            setup_win.resizable(False, False)
 
             # Scrollable frame setup
             canvas = Canvas(setup_win, borderwidth=0, background="#f0f0f0")
@@ -471,9 +473,14 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             def load_gif_frames_for_thumb(gif_path):
                 img = Image.open(gif_path)
                 frames = []
+                thumb_height = 74
+                orig_width, orig_height = img.size
+                thumb_width = int(orig_width * (thumb_height / orig_height))
+                thumb_size = (thumb_width, thumb_height)
                 try:
                     while True:
-                        frame = ImageTk.PhotoImage(img.copy(), master=setup_win)
+                        thumb_img = img.copy().resize(thumb_size, Image.LANCZOS)
+                        frame = ImageTk.PhotoImage(thumb_img, master=setup_win)
                         frames.append(frame)
                         img.seek(len(frames))
                 except EOFError:
@@ -489,17 +496,16 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
                 action = gif_info.get("action", "")
 
                 row_frame = Frame(frame, background="#f0f0f0", relief="groove", borderwidth=1)
-                row_frame.grid(row=idx, column=0, sticky="ew", padx=4, pady=4)
-                row_frame.columnconfigure(1, weight=1)
+                row_frame.pack(fill="x", padx=4, pady=4)
 
-                # Animated GIF thumbnail
+                # Animated GIF thumbnail (top)
                 try:
                     thumb_frames, thumb_delay = load_gif_frames_for_thumb(gif_path)
                 except Exception:
                     thumb_frames, thumb_delay = [], 100
 
                 thumb_label = Label(row_frame, background="#f0f0f0")
-                thumb_label.grid(row=0, column=0, rowspan=2, padx=4, pady=4)
+                thumb_label.pack(side="top", anchor="w", padx=4, pady=(4, 0))
 
                 # Animation state for thumbnail
                 anim_states[gif_name] = {"timer_id": None}
@@ -521,15 +527,15 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
 
                 animate_thumb(thumb_label, thumb_frames, thumb_delay, 0, anim_states[gif_name])
 
-                # Description and info
+                # Description and info (full width)
                 desc_text = f"{desc}\nArea: {area}\nAction: {action}"
-                desc_label = Label(row_frame, text=desc_text, justify="left", wraplength=350, background="#f0f0f0", font=("Arial", 11))
-                desc_label.grid(row=0, column=1, sticky="w", padx=4, pady=2)
+                desc_label = Label(row_frame, text=desc_text, justify="left", wraplength=600, background="#f0f0f0", font=("Arial", 11))
+                desc_label.pack(side="top", anchor="w", fill="x", padx=4, pady=2)
 
-                # Checkbox
+                # Checkbox (below description)
                 var = IntVar(value=1 if gif_name in selected_gifs else 0)
                 checkbox = Checkbutton(row_frame, text="Include", variable=var, background="#f0f0f0", font=("Arial", 10))
-                checkbox.grid(row=1, column=1, sticky="w", padx=4, pady=2)
+                checkbox.pack(side="top", anchor="w", padx=4, pady=(0, 4))
                 checkbox_vars[gif_name] = var
 
             # Save button
@@ -552,6 +558,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
                 for var in checkbox_vars.values():
                     var.set(0)
 
+            # Select all / Deselect all buttons above the SAVE/CLOSE row
             select_frame = Frame(setup_win, background="#f0f0f0")
             select_frame.pack(side="bottom", pady=(8,2))
 
@@ -561,10 +568,14 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             deselect_all_btn = Button(select_frame, text="Deselect all", command=deselect_all, font=("Arial", 11), width=12, height=1)
             deselect_all_btn.pack(side="left", padx=(4,8))
 
+            # SAVE and CLOSE buttons at the very bottom
             save_btn = Button(setup_win, text="SAVE", command=save_config, font=("Arial", 12), bg="#4caf50", fg="white", width=10, height=2)
             save_btn.pack(side="bottom", pady=8)
 
-            close_btn = Button(setup_win, text="CLOSE", command=setup_win.destroy, font=("Arial", 12), bg="#f44336", fg="white", width=10, height=2)
+            def on_setup_close():
+                setup_win.destroy()
+                reset_timer()
+            close_btn = Button(setup_win, text="CLOSE", command=on_setup_close, font=("Arial", 12), bg="#f44336", fg="white", width=10, height=2)
             close_btn.pack(side="bottom", pady=8)
 
             save_label = Label(setup_win, text="", font=("Arial", 11), background="#f0f0f0")
