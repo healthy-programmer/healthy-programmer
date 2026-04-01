@@ -428,7 +428,10 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
 
         # Log button
         def open_log_viewer():
-            ExerciseLogViewer(root)
+            # Pause timer when log screen opens
+            cancel_timer()
+            # Pass timer callbacks to ExerciseLogViewer
+            ExerciseLogViewer(root, reset_timer, cancel_timer)
 
         log_btn = Button(button_frame, text="Log", command=open_log_viewer, font=("Arial", 10), width=6, height=2)
         log_btn.pack(side="right", padx=(2,2), pady=4, fill="x", expand=True)

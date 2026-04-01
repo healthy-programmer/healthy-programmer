@@ -53,12 +53,18 @@ class ExerciseLogger:
         return by_date
 
 class ExerciseLogViewer:
-    def __init__(self, parent):
+    def __init__(self, parent, reset_timer_callback=None, cancel_timer_callback=None):
         self.parent = parent
         self.top = Toplevel(parent)
         self.top.title("Exercise Log Viewer")
         self.top.geometry("700x600")
         self.top.resizable(False, False)
+        # Store callbacks for later use
+        self.reset_timer_callback = reset_timer_callback
+        self.cancel_timer_callback = cancel_timer_callback
+        # Cancel the reminder window timer immediately
+        if self.cancel_timer_callback:
+            self.cancel_timer_callback()
 
         self.logs_by_date = ExerciseLogger.logs_by_date()
         self.dates = sorted(self.logs_by_date.keys(), reverse=True)
@@ -158,8 +164,13 @@ class ExerciseLogViewer:
             else:
                 img_label = Label(row, text="[Image]", background="#e8f5e9")
                 img_label.pack(side="left", padx=8, pady=8)
-            # Description
-            desc_text = f"{log['description']}\nArea: {log['area']}\nAction: {log['action']}"
+            # Description with timestamp (HH:MM)
+            dt_str = log['datetime']
+            try:
+                time_str = dt_str.split(" ")[1][:5]  # HH:MM
+            except Exception:
+                time_str = ""
+            desc_text = f"{log['description']}\nArea: {log['area']}\nAction: {log['action']}\nTime: {time_str}"
             desc_label = Label(row, text=desc_text, justify="left", wraplength=400, background="#e8f5e9", font=("Arial", 11))
             desc_label.pack(side="left", padx=8, pady=8)
             # Bind mouse wheel events to row and its children
@@ -167,6 +178,19 @@ class ExerciseLogViewer:
             self._bind_mousewheel_to_widget(img_label)
             self._bind_mousewheel_to_widget(desc_label)
 
+        # When log viewer is closed, reset timer
+        def on_log_close():
+            self.top.destroy()
+            if self.reset_timer_callback:
+                self.reset_timer_callback()
+        self.top.protocol("WM_DELETE_WINDOW", on_log_close)
+
+        # Add a visible Close button at the bottom
+        # Move Close button to the top
+        close_btn_frame = Frame(self.top)
+        close_btn_frame.pack(side="top", fill="x", pady=8)
+        close_btn = Button(close_btn_frame, text="Close", command=on_log_close, font=("Arial", 11), bg="#f44336", fg="white", width=10, height=1)
+        close_btn.pack(pady=4)
 # Example usage:
 # ExerciseLogger.log_exercise("/path/to/exercise.jpg", "Description", "Area", "Action")
 # viewer = ExerciseLogViewer(parent_window)
