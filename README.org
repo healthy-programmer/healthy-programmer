@@ -34,14 +34,14 @@ It pops up a random exercise GIF at regular intervals, reminding you to move, st
 
 ---
 
-** Features **
+* Features
 - Automated movement reminders: Receive regular, customizable notifications with exercise animations to promote healthy activity throughout the day.
 - Personal exercise selection: Tailor your reminders by choosing preferred exercises and filtering by categories for a personalized wellness experience.
 - Visual exercise guidance: Animated GIFs provide clear demonstrations of each exercise, making it easy to follow along.
 - Activity logging and review: Track your exercise history with detailed logs and calendar views, including descriptions and images for each session.
 
 
-**How to Install & Run**
+* How to Install & Run
 
 1. Make sure you have Python 3 installed.
 2. Run the script from the terminal:
