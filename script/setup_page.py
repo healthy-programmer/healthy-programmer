@@ -66,7 +66,7 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     save_label = Label(button_row, text="", font=("Arial", 11), background="#f0f0f0")
     save_label.pack(side="left", padx=(8,4))
 
-    selected_count_label = Label(button_row, text="", font=("Arial", 11), background="#f0f0f0")
+    selected_count_label = Label(button_row, text="", font=("Arial", 11), background="#d8f5d3")
     selected_count_label.pack(side="left", padx=(8,4))
 
     canvas = Canvas(setup_win, borderwidth=0, background="#f0f0f0")
@@ -107,10 +107,21 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
 
     checkbox_vars = {}
     anim_states = {}
+    row_frames = {}
 
     def update_selected_count():
         count = sum(var.get() for var in checkbox_vars.values())
         selected_count_label.config(text=f"Selected: {count}")
+
+    def update_row_backgrounds():
+        for gif_name, var in checkbox_vars.items():
+            bg = "#d8f5d3" if var.get() == 1 else "#f0f0f0"
+            row_frame = row_frames.get(gif_name)
+            if row_frame:
+                row_frame.config(background=bg)
+                # Also update content_row background for consistency
+                for child in row_frame.winfo_children():
+                    child.config(background=bg)
 
 
     def load_gif_frames_for_thumb(gif_path):
@@ -139,6 +150,7 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
 
         row_frame = Frame(frame, background="#f0f0f0", relief="groove", borderwidth=1)
         row_frame.pack(fill="x", padx=4, pady=4)
+        row_frames[gif_name] = row_frame
 
         content_row = Frame(row_frame, background="#f0f0f0")
         content_row.pack(fill="x", padx=4, pady=4)
@@ -150,6 +162,7 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
 
         def on_checkbox_toggle(*args):
             update_selected_count()
+            update_row_backgrounds()
         var.trace_add("write", on_checkbox_toggle)
 
         try:
@@ -205,11 +218,13 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
         for var in checkbox_vars.values():
             var.set(1)
         update_selected_count()
+        update_row_backgrounds()
 
     def deselect_all():
         for var in checkbox_vars.values():
             var.set(0)
         update_selected_count()
+        update_row_backgrounds()
 
     select_all_btn.config(command=select_all)
     deselect_all_btn.config(command=deselect_all)
@@ -221,3 +236,4 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
 
     setup_win.protocol("WM_DELETE_WINDOW", on_setup_close)
     update_selected_count()
+    update_row_backgrounds()
