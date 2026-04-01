@@ -7,6 +7,7 @@ import sys
 import time
 import threading
 import csv
+import json
 
 try:
     from tkinter import Tk, Label
@@ -282,9 +283,34 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         reset_timer()
 
         def next_exercise():
-            # Pick a new random gif (not the current one)
-            available = [f for f in gif_files if f != current["gif_path"]]
+            # Filter exercises based on personalized configuration
+            personalized_gifs = []
+            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personalized_exercises.json")
+            if os.path.exists(config_path):
+                try:
+                    with open(config_path, "r", encoding="utf-8") as f:
+                        personalized_gifs = json.load(f)
+                except json.JSONDecodeError:
+                    print("[DEBUG] Error: Malformed JSON in personalized configuration. Falling back to all exercises.")
+                    personalized_gifs = []
+                except Exception as e:
+                    print(f"[DEBUG] Error loading personalized configuration: {e}. Falling back to all exercises.")
+                    personalized_gifs = []
+            else:
+                print("[DEBUG] Personalized configuration file not found. Falling back to all exercises.")
+
+            # Fallback to all exercises if personalized config is empty
+            if not personalized_gifs:
+                print("[DEBUG] Personalized configuration is empty. Using all exercises.")
+                personalized_gifs = [os.path.basename(f) for f in gif_files]
+
+            # Pick a new random gif (not the current one) ONLY from checked (included) exercises
+            available = [f for f in gif_files if f != current["gif_path"] and os.path.basename(f) in personalized_gifs]
+            # If personalized_gifs is not empty and available is empty, fallback to all except current
+            if personalized_gifs and not available:
+                available = [f for f in gif_files if f != current["gif_path"]]
             if not available:
+                print("[DEBUG] No available exercises to choose from.")
                 return
             new_gif = random.choice(available)
             new_name = os.path.basename(new_gif)
@@ -393,6 +419,166 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         close_btn = Button(button_frame, text="Close", command=root.destroy, font=("Arial", 10), width=6, height=2)
         close_btn.pack(side="right", padx=(2,6), pady=4, fill="x", expand=True)
 
+        # Gear icon button (ozubene kolecko)
+        def open_setup_page():
+            import tkinter
+            from tkinter import Canvas, Scrollbar, Checkbutton, IntVar
+            import json
+
+            # Disable reminder window timer while setup is open
+            if timer_id[0]:
+                root.after_cancel(timer_id[0])
+                timer_id[0] = None
+
+            setup_win = tkinter.Toplevel(root)
+            setup_win.title("Personalize Exercises")
+            setup_win.geometry("600x600")
+            setup_win.resizable(True, True)
+
+            # Scrollable frame setup
+            canvas = Canvas(setup_win, borderwidth=0, background="#f0f0f0")
+            frame = Frame(canvas, background="#f0f0f0")
+            scrollbar = Scrollbar(setup_win, orient="vertical", command=canvas.yview)
+            canvas.configure(yscrollcommand=scrollbar.set)
+
+            scrollbar.pack(side="right", fill="y")
+            canvas.pack(side="left", fill="both", expand=True)
+            canvas.create_window((0,0), window=frame, anchor="nw")
+
+            def on_frame_configure(event):
+                canvas.configure(scrollregion=canvas.bbox("all"))
+            frame.bind("<Configure>", on_frame_configure)
+
+            # Load personalized config if exists
+            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personalized_exercises.json")
+            selected_gifs = set()
+            if os.path.exists(config_path):
+                try:
+                    with open(config_path, "r", encoding="utf-8") as f:
+                        selected_gifs = set(json.load(f))
+                except Exception:
+                    selected_gifs = set()
+
+            # Load all exercises
+            gif_files = get_gif_files()
+            gif_desc_map = load_gif_descriptions()
+
+            # Store checkbox variables and animation states
+            checkbox_vars = {}
+            anim_states = {}
+
+            # Helper to load gif frames for thumbnails
+            def load_gif_frames_for_thumb(gif_path):
+                img = Image.open(gif_path)
+                frames = []
+                try:
+                    while True:
+                        frame = ImageTk.PhotoImage(img.copy(), master=setup_win)
+                        frames.append(frame)
+                        img.seek(len(frames))
+                except EOFError:
+                    pass
+                return frames, img.info.get('duration', 100)
+
+            # For each exercise, show animated thumbnail, description, checkbox
+            for idx, gif_path in enumerate(gif_files):
+                gif_name = os.path.basename(gif_path)
+                gif_info = gif_desc_map.get(gif_name, {})
+                desc = gif_info.get("description", "")
+                area = gif_info.get("area", "")
+                action = gif_info.get("action", "")
+
+                row_frame = Frame(frame, background="#f0f0f0", relief="groove", borderwidth=1)
+                row_frame.grid(row=idx, column=0, sticky="ew", padx=4, pady=4)
+                row_frame.columnconfigure(1, weight=1)
+
+                # Animated GIF thumbnail
+                try:
+                    thumb_frames, thumb_delay = load_gif_frames_for_thumb(gif_path)
+                except Exception:
+                    thumb_frames, thumb_delay = [], 100
+
+                thumb_label = Label(row_frame, background="#f0f0f0")
+                thumb_label.grid(row=0, column=0, rowspan=2, padx=4, pady=4)
+
+                # Animation state for thumbnail
+                anim_states[gif_name] = {"timer_id": None}
+
+                def animate_thumb(label, frames, delay, frame_idx=0, anim_state=None):
+                    if not frames:
+                        label.config(text="[GIF]")
+                        return
+                    frame = frames[frame_idx]
+                    label.config(image=frame)
+                    label.image = frame
+                    next_idx = (frame_idx + 1) % len(frames)
+                    if anim_state is not None:
+                        if anim_state["timer_id"]:
+                            label.after_cancel(anim_state["timer_id"])
+                        anim_state["timer_id"] = label.after(delay, animate_thumb, label, frames, delay, next_idx, anim_state)
+                    else:
+                        label.after(delay, animate_thumb, label, frames, delay, next_idx)
+
+                animate_thumb(thumb_label, thumb_frames, thumb_delay, 0, anim_states[gif_name])
+
+                # Description and info
+                desc_text = f"{desc}\nArea: {area}\nAction: {action}"
+                desc_label = Label(row_frame, text=desc_text, justify="left", wraplength=350, background="#f0f0f0", font=("Arial", 11))
+                desc_label.grid(row=0, column=1, sticky="w", padx=4, pady=2)
+
+                # Checkbox
+                var = IntVar(value=1 if gif_name in selected_gifs else 0)
+                checkbox = Checkbutton(row_frame, text="Include", variable=var, background="#f0f0f0", font=("Arial", 10))
+                checkbox.grid(row=1, column=1, sticky="w", padx=4, pady=2)
+                checkbox_vars[gif_name] = var
+
+            # Save button
+            def save_config():
+                selected = [name for name, var in checkbox_vars.items() if var.get() == 1]
+                try:
+                    with open(config_path, "w", encoding="utf-8") as f:
+                        json.dump(selected, f, indent=2)
+                    save_label.config(text="Saved!", fg="green")
+                    setup_win.after(300, setup_win.destroy)  # Close window after short delay
+                except Exception as e:
+                    save_label.config(text=f"Error: {e}", fg="red")
+
+            # Select all / Deselect all buttons
+            def select_all():
+                for var in checkbox_vars.values():
+                    var.set(1)
+
+            def deselect_all():
+                for var in checkbox_vars.values():
+                    var.set(0)
+
+            select_frame = Frame(setup_win, background="#f0f0f0")
+            select_frame.pack(side="bottom", pady=(8,2))
+
+            select_all_btn = Button(select_frame, text="Select all", command=select_all, font=("Arial", 11), width=10, height=1)
+            select_all_btn.pack(side="left", padx=(8,4))
+
+            deselect_all_btn = Button(select_frame, text="Deselect all", command=deselect_all, font=("Arial", 11), width=12, height=1)
+            deselect_all_btn.pack(side="left", padx=(4,8))
+
+            save_btn = Button(setup_win, text="SAVE", command=save_config, font=("Arial", 12), bg="#4caf50", fg="white", width=10, height=2)
+            save_btn.pack(side="bottom", pady=8)
+
+            close_btn = Button(setup_win, text="CLOSE", command=setup_win.destroy, font=("Arial", 12), bg="#f44336", fg="white", width=10, height=2)
+            close_btn.pack(side="bottom", pady=8)
+
+            save_label = Label(setup_win, text="", font=("Arial", 11), background="#f0f0f0")
+            save_label.pack(side="bottom", pady=2)
+
+            # When setup window closes, re-enable timer
+            def on_setup_close():
+                setup_win.destroy()
+                reset_timer()
+            setup_win.protocol("WM_DELETE_WINDOW", on_setup_close)
+
+        gear_btn = Button(button_frame, text="⚙️", command=open_setup_page, font=("Arial", 12), width=3, height=2)
+        gear_btn.pack(side="right", padx=(2,2), pady=4)
+
         root.mainloop()
 
     def _show_with_feh():
@@ -439,8 +625,21 @@ def main():
     args = parser.parse_args()
 
     gif_files = get_gif_files()
+    # Personalized config logic
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personalized_exercises.json")
+    personalized_gifs = []
+    if os.path.exists(config_path):
+        try:
+            import json
+            with open(config_path, "r", encoding="utf-8") as f:
+                personalized_gifs = json.load(f)
+            # Only use personalized list if it contains at least one valid gif
+            if personalized_gifs:
+                gif_files = [f for f in gif_files if os.path.basename(f) in personalized_gifs]
+        except Exception:
+            pass
     if not gif_files:
-        print(f"No GIF files found in {GIF_DIR}")
+        print(f"No GIF files found in {GIF_DIR} or personalized config.")
         sys.exit(1)
 
     gif_desc_map = load_gif_descriptions()
