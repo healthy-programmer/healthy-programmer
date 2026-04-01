@@ -10,6 +10,7 @@ import csv
 import json
 
 from datetime import datetime, timedelta
+from exerisise_log import ExerciseLogger, ExerciseLogViewer
 
 try:
     from tkinter import Tk, Label
@@ -327,6 +328,8 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             # If description is empty or suspicious, set a default
             if not new_desc or new_desc.strip() == "!!":
                 new_desc = "No description available for this exercise."
+            # Log the exercise event
+            ExerciseLogger.log_exercise(new_gif, new_desc, new_area, new_action)
             # Load new frames
             frames, delay, (width, height) = load_gif_frames(new_gif)
             if not frames:
@@ -423,9 +426,15 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         close_btn = Button(button_frame, text="Close", command=root.destroy, font=("Arial", 10), width=6, height=2)
         close_btn.pack(side="right", padx=(2,6), pady=4, fill="x", expand=True)
 
+        # Log button
+        def open_log_viewer():
+            ExerciseLogViewer(root)
+
+        log_btn = Button(button_frame, text="Log", command=open_log_viewer, font=("Arial", 10), width=6, height=2)
+        log_btn.pack(side="right", padx=(2,2), pady=4, fill="x", expand=True)
+
         # Gear icon button (ozubene kolecko)
         from setup_page import open_setup_page
-
 
         def cancel_timer():
             try:
@@ -444,6 +453,9 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             height=2
         )
         gear_btn.pack(side="right", padx=(2,2), pady=4)
+
+        # Log the initial exercise when popup is shown
+        ExerciseLogger.log_exercise(current["gif_path"], current["description"], current["area"], current["action"])
 
         root.mainloop()
 

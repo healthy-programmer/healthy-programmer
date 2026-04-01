@@ -91,9 +91,9 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     def _on_mousewheel(event):
         delta = event.delta if event.delta else (-120 if event.num == 5 else 120)
         canvas.yview_scroll(int(-1*(delta/120)), "units")
-    canvas.bind_all("<MouseWheel>", _on_mousewheel)
-    canvas.bind_all("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
-    canvas.bind_all("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))
+    canvas.bind("<MouseWheel>", _on_mousewheel)
+    canvas.bind("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
+    canvas.bind("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))
 
     config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personalized_exercises.json")
     selected_gifs = set()
