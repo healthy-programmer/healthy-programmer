@@ -103,8 +103,40 @@ fi
 
 # 4. Ensure tkcalendar is installed for this Python
 if ! $PYTHON -c "import tkcalendar" >/dev/null 2>&1; then
-    echo "tkcalendar not found, installing with pip..."
-    $PYTHON -m pip install --user --upgrade tkcalendar
+    echo "tkcalendar not found, attempting system package install..."
+    if command_exists apt; then
+        if ! $PYTHON -c "import tkcalendar" >/dev/null 2>&1; then
+            sudo apt update
+            sudo apt install -y python3-tkcalendar
+        fi
+    elif command_exists dnf; then
+        sudo dnf install -y python3-tkcalendar
+    elif command_exists yum; then
+        sudo yum install -y python3-tkcalendar
+    elif command_exists pacman; then
+        sudo pacman -Sy --noconfirm tkcalendar
+    elif command_exists brew; then
+        brew install tkcalendar
+    fi
+    # Try again after system install
+    if ! $PYTHON -c "import tkcalendar" >/dev/null 2>&1; then
+        echo "tkcalendar still not found, attempting pip install..."
+        $PYTHON -m pip install --user --upgrade tkcalendar 2>&1 | tee /tmp/tkcalendar_pip.log
+        if grep -q "externally-managed-environment" /tmp/tkcalendar_pip.log; then
+            echo "ERROR: pip install failed due to externally-managed-environment (PEP 668)."
+            echo "To fix, create a virtual environment:"
+            echo "  python3 -m venv ~/move_reminder_venv"
+            echo "  source ~/move_reminder_venv/bin/activate"
+            echo "  pip install tkcalendar pillow"
+            echo "Then run this script using ~/move_reminder_venv/bin/python."
+            exit 1
+        fi
+    fi
+    # Final check
+    if ! $PYTHON -c "import tkcalendar" >/dev/null 2>&1; then
+        echo "ERROR: tkcalendar could not be installed. Please install manually using system package manager or virtualenv."
+        exit 1
+    fi
 fi
 
 # 5. Run the script
