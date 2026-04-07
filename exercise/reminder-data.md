@@ -93,3 +93,9 @@ Rotate your torso to each side, allowing your head and elbow to lead the movemen
 **Action:** stretch, flexibility
 **Category:** sitting
 Sit down with your legs apart, in a comfortable position. Keep your chest open at all times. Try any of these stretches and rotations—they help relieve stiffness in the lower back while also stretching your hamstrings.
+
+## 1000051497.gif 
+**Area:** upper back  
+**Action:** strengthen
+**Category:** standing
+Raise your arms overhead, then lower them down. As you do this, focus on these key points: open your chest, pull your arms back, engage your core and glutes. Repeat up to 30 times, or until you feel your shoulders working intensely.
