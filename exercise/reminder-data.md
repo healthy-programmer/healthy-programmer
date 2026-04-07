@@ -99,3 +99,9 @@ Sit down with your legs apart, in a comfortable position. Keep your chest open a
 **Action:** strengthen
 **Category:** standing
 Raise your arms overhead, then lower them down. As you do this, focus on these key points: open your chest, pull your arms back, engage your core and glutes. Repeat up to 30 times, or until you feel your shoulders working intensely.
+
+## 1000051524.gif
+**Area:** upper back, shoulders, hamstrings
+**Action:** stretch
+**Category:** standing
+Interlock your fingers behind your back. If you can't do this, use a towel or similar object. With your chest open, bend forward and reach your arms up and over your head. Avoid bending from your lower back. Focus on the stretch in your hamstrings.
