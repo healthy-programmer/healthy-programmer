@@ -503,6 +503,12 @@ def main():
         default="bottom-right",
         help="Popup window position: top-left, top-right, bottom-left, bottom-right, center (default: bottom-right)"
     )
+    parser.add_argument(
+        "--working-hours",
+        type=str,
+        default="8:00-16:30",
+        help="Only show reminders between these hours (24h format, e.g. 8:00-16:30). Default: 8:00-16:30"
+    )
     args = parser.parse_args()
 
     gif_files = get_gif_files()
@@ -530,38 +536,82 @@ def main():
 
     try:
         log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../exercise/reminder-log.txt")
+
+        # Parse working hours
+        def parse_working_hours(whours):
+            try:
+                start_str, end_str = whours.split("-")
+                start_h, start_m = map(int, start_str.strip().split(":"))
+                end_h, end_m = map(int, end_str.strip().split(":"))
+                return (start_h, start_m), (end_h, end_m)
+            except Exception:
+                print("Invalid --working-hours format. Use e.g. 8:00-16:30")
+                sys.exit(1)
+
+        (start_h, start_m), (end_h, end_m) = parse_working_hours(args.working_hours)
+
+        def is_within_working_hours(dt):
+            start = dt.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
+            end = dt.replace(hour=end_h, minute=end_m, second=0, microsecond=0)
+            if end <= start:
+                # Overnight shift (e.g. 22:00-06:00)
+                return dt >= start or dt <= end
+            else:
+                return start <= dt <= end
+
         while True:
-            gif_path = random.choice(gif_files)
-            gif_name = os.path.basename(gif_path)
-            gif_info = gif_desc_map.get(gif_name, {})
-            description = gif_info.get("description", "")
-            area = gif_info.get("area", "")
-            action = gif_info.get("action", "")
-            print(f"[{datetime.now():%Y-%m-%d %H:%M:%S}] Showing: {gif_name}")
-            if description:
-                print(f"Description: {description}")
-            if area:
-                print(f"Area: {area}")
-            if action:
-                print(f"Action: {action}")
-            show_gif(
-                gif_path,
-                description=description,
-                duration=args.duration,
-                position=args.position
-            )
+            now = datetime.now()
+            if is_within_working_hours(now):
+                gif_path = random.choice(gif_files)
+                gif_name = os.path.basename(gif_path)
+                gif_info = gif_desc_map.get(gif_name, {})
+                description = gif_info.get("description", "")
+                area = gif_info.get("area", "")
+                action = gif_info.get("action", "")
+                print(f"[{now:%Y-%m-%d %H:%M:%S}] Showing: {gif_name}")
+                if description:
+                    print(f"Description: {description}")
+                if area:
+                    print(f"Area: {area}")
+                if action:
+                    print(f"Action: {action}")
+                show_gif(
+                    gif_path,
+                    description=description,
+                    duration=args.duration,
+                    position=args.position
+                )
+            else:
+                print(f"[{now:%Y-%m-%d %H:%M:%S}] Outside working hours ({args.working_hours}), skipping reminder.")
+
             # Calculate next reminder time
             next_reminder_time = datetime.now() + timedelta(minutes=args.interval)
             seconds_remaining = args.interval * 60
+
+            # If next reminder would be outside working hours, sleep until working hours resume
             while seconds_remaining > 0:
                 now = datetime.now()
-                time_left = next_reminder_time - now
-                minutes_left = int(time_left.total_seconds() // 60)
-                seconds_left = int(time_left.total_seconds() % 60)
-                print(f"[DEBUG] Time to next exercise: {minutes_left}m {seconds_left}s")
-                sleep_time = min(60, seconds_remaining)
-                time.sleep(sleep_time)
-                seconds_remaining -= sleep_time
+                if not is_within_working_hours(now):
+                    # Calculate time until working hours start
+                    today_start = now.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
+                    if now < today_start:
+                        wait_seconds = (today_start - now).total_seconds()
+                    else:
+                        # Next working day
+                        tomorrow = now + timedelta(days=1)
+                        next_start = tomorrow.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
+                        wait_seconds = (next_start - now).total_seconds()
+                    print(f"[DEBUG] Sleeping until working hours resume in {int(wait_seconds//60)}m {int(wait_seconds%60)}s")
+                    time.sleep(min(wait_seconds, seconds_remaining))
+                    seconds_remaining -= min(wait_seconds, seconds_remaining)
+                else:
+                    time_left = next_reminder_time - now
+                    minutes_left = int(time_left.total_seconds() // 60)
+                    seconds_left = int(time_left.total_seconds() % 60)
+                    print(f"[DEBUG] Time to next exercise: {minutes_left}m {seconds_left}s")
+                    sleep_time = min(60, seconds_remaining)
+                    time.sleep(sleep_time)
+                    seconds_remaining -= sleep_time
     except KeyboardInterrupt:
         print("\nMove reminder stopped.")
 

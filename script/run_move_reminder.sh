@@ -3,6 +3,8 @@
 set -e
 
 echo "=== Move Reminder Setup & Run Script ==="
+echo "Usage: $0 [--interval MINUTES] [--duration SECONDS] [--position POS] [--working-hours START-END]"
+echo "  --working-hours: Only show reminders between these hours (24h format, e.g. 8:00-16:30). Default: 8:00-16:30"
 
 command_exists() {
     command -v "$1" >/dev/null 2>&1

@@ -1,5 +1,7 @@
 @echo off
 REM === Move Reminder Setup & Run Script (Windows) ===
+REM Usage: run_move_reminder.bat [--interval MINUTES] [--duration SECONDS] [--position POS] [--working-hours START-END]
+REM   --working-hours: Only show reminders between these hours (24h format, e.g. 8:00-16:30). Default: 8:00-16:30
 
 REM 1. Check for Python
 where python >nul 2>nul

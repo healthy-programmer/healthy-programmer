@@ -48,7 +48,7 @@ It pops up a random exercise GIF at regular intervals, reminding you to move, st
 1. Make sure you have Python 3 installed (with Tkinter).
 2. Open Terminal and run:
    #+BEGIN_SRC shell
-   ./script/run_move_reminder.sh --interval 60 --duration 30 --position bottom-right
+   ./script/run_move_reminder.sh --interval 60 --duration 30 --position bottom-right --working-hours 8:00-16:30
    #+END_SRC
    The script will:
    - Detect the best Python interpreter with Tkinter.
@@ -65,7 +65,7 @@ It pops up a random exercise GIF at regular intervals, reminding you to move, st
 1. Make sure you have [Homebrew](https://brew.sh/) installed.
 2. Open Terminal and run:
    #+BEGIN_SRC shell
-   ./script/run_move_reminder_mac.sh --interval 60 --duration 30 --position bottom-right
+   ./script/run_move_reminder_mac.sh --interval 60 --duration 30 --position bottom-right --working-hours 8:00-16:30
    #+END_SRC
    This script will:
    - Check for Python 3 and install via Homebrew if needed.
@@ -82,7 +82,7 @@ It pops up a random exercise GIF at regular intervals, reminding you to move, st
 1. Make sure you have Python 3 installed. Download from [python.org](https://www.python.org/downloads/).
 2. Open Command Prompt and run:
    #+BEGIN_SRC bat
-   script\run_move_reminder.bat --interval 60 --duration 30 --position bottom-right
+   script\run_move_reminder.bat --interval 60 --duration 30 --position bottom-right --working-hours 8:00-16:30
    #+END_SRC
    The batch script will:
    - Check for Python and pip.
@@ -115,12 +115,17 @@ This will show you all available options.
 - `--position {top-left,top-right,bottom-left,bottom-right,center}`  
   Popup window position (default: bottom-right)
 
-- `-h`, `--help`  
+- `--working-hours START-END`
+  Only show reminders between these hours (24h format, e.g. 8:00-16:30).
+  Default: 8:00-16:30.
+  Reminders and activity logs are only created during these hours, so you won't get logs when you're away from your computer.
+
+- `-h`, `--help`
   Show help message and exit
 
 **Example:**
 #+BEGIN_SRC shell
-./script/run_move_reminder.sh --interval 45 --duration 20 --position center
+./script/run_move_reminder.sh --interval 45 --duration 20 --position center --working-hours 9:00-17:00
 #+END_SRC
 
 ---
