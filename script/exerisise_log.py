@@ -13,40 +13,50 @@ try:
 except ImportError:
     Calendar = None
 
-LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "exercise_log.log")
+import glob
+
+LOG_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "log"))
+
+def get_daily_log_file():
+    today = datetime.now().strftime("%Y-%m-%d")
+    if not os.path.exists(LOG_DIR):
+        os.makedirs(LOG_DIR, exist_ok=True)
+    return os.path.join(LOG_DIR, f"{today}.log")
 
 class ExerciseLogger:
     @staticmethod
     def log_exercise(image_path, description, area, action):
         dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        # Log all image files (gif, jpg, png, etc.)
         try:
+            log_file = get_daily_log_file()
             print(f"[ExerciseLogger] Logging exercise: {dt}, {image_path}, {description}, {area}, {action}")
-            with open(LOG_FILE, "a", encoding="utf-8", newline='') as f:
+            with open(log_file, "a", encoding="utf-8", newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow([dt, os.path.basename(image_path), description, area, action])
-            print(f"[ExerciseLogger] Log entry written to {LOG_FILE}")
+            print(f"[ExerciseLogger] Log entry written to {log_file}")
         except Exception as e:
             print(f"[ExerciseLogger] Failed to log exercise: {e}")
 
     @staticmethod
     def read_logs():
         logs = []
-        if not os.path.exists(LOG_FILE):
+        if not os.path.exists(LOG_DIR):
             return logs
-        with open(LOG_FILE, "r", encoding="utf-8") as f:
-            reader = csv.reader(f)
-            for row in reader:
-                if len(row) >= 5:
-                    dt, image, description, area, action = row[:5]
-                    logs.append({
-                        "datetime": dt,
-                        "date": dt.split(" ")[0],
-                        "image": image,
-                        "description": description,
-                        "area": area,
-                        "action": action
-                    })
+        log_files = sorted(glob.glob(os.path.join(LOG_DIR, "*.log")))
+        for file_path in log_files:
+            with open(file_path, "r", encoding="utf-8") as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    if len(row) >= 5:
+                        dt, image, description, area, action = row[:5]
+                        logs.append({
+                            "datetime": dt,
+                            "date": dt.split(" ")[0],
+                            "image": image,
+                            "description": description,
+                            "area": area,
+                            "action": action
+                        })
         return logs
 
     @staticmethod
