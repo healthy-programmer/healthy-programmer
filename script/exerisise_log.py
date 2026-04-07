@@ -262,9 +262,10 @@ class ExerciseLogViewer:
         # When log viewer is closed, reset timer
         # (protocol assignment is now handled in __init__)
 
-        # Scroll to the bottom of the log list
+        # Scroll to the bottom of the log list after updating scrollregion
         self.log_canvas.update_idletasks()
-        self.log_canvas.yview_moveto(1.0)
+        self.log_canvas.yview_moveto(0.0)  # Optional: reset to top first
+        self.log_canvas.after(50, lambda: self.log_canvas.yview_moveto(1.0))
 
     def _bind_mousewheel_to_widget(self, widget):
         # Windows/Mac: bind to widget
