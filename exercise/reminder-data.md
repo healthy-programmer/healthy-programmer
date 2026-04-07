@@ -105,3 +105,9 @@ Raise your arms overhead, then lower them down. As you do this, focus on these k
 **Action:** stretch
 **Category:** standing
 Interlock your fingers behind your back. If you can't do this, use a towel or similar object. With your chest open, bend forward and reach your arms up and over your head. Avoid bending from your lower back. Focus on the stretch in your hamstrings.
+
+## 1000051529.gif
+**Area:** upper back, shoulders, arms
+**Action:** stretch
+**Category:** standing
+Open your chest, belly keep strong. Move your arms from left to right with your elbows bent, then repeat the movement with your arms straight. Next, move your arms up and down to increase the full range of motion in your stiff shoulders.
