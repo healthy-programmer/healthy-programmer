@@ -1,5 +1,32 @@
 #+TITLE: Healthy Programmer
 
+* Quickstart
+
+**Linux**
+1. Open Terminal and run:
+   #+BEGIN_SRC shell
+   ./script/install_move_reminder.sh
+   ./script/run_move_reminder.sh --interval 60 --duration 30
+   #+END_SRC
+
+**MacOS**
+1. Open Terminal and run:
+   #+BEGIN_SRC shell
+   ./script/install_move_reminder_mac.sh
+   ./script/run_move_reminder_mac.sh --interval 60 --duration 30
+   #+END_SRC
+
+**Windows**
+1. Open Command Prompt and run:
+   #+BEGIN_SRC bat
+   script\install_move_reminder.bat
+   script\run_move_reminder.bat --interval 60 --duration 30
+   #+END_SRC
+
+You should see a popup with a random exercise GIF. That's it!
+
+---
+
 What is this project NOT about? Let’s be clear: this is not a step-by-step guide to mastering the perfect
 handstand or flipping flawless pancakes. If you’re looking for acrobatic tricks or culinary skills,
 YouTube is overflowing with tutorials and expert videos for that.
@@ -14,6 +41,13 @@ based on my own experience. If you’re tired of feeling stiff or achy, and want
 chasing perfection, you’re in the right place.
 
 [[./exercise/images/move-reminder-screenshot.png]]
+
+* Gallery
+
+#+CAPTION: Example exercise GIFs shown by the Move Reminder
+[[./exercise/images/1000050407.gif]]
+[[./exercise/images/20220117_063939.gif]]
+[[./exercise/images/20220117_064306.gif]]
 
 This project is actively growing—new exercises and routines are added every week to help you stay healthy and pain-free at your desk.
 I'm also working to make it easier to find the right exercise for you: soon, all exercises will be categorized by body area (neck, back, hips, knees, ankles) and by difficulty.
