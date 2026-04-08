@@ -45,9 +45,9 @@ chasing perfection, you’re in the right place.
 * Gallery
 
 #+CAPTION: Example exercise GIFs shown by the Move Reminder
-[[./exercise/images/1000050407.gif]]
-[[./exercise/images/20220117_063939.gif]]
-[[./exercise/images/20220117_064306.gif]]
+[[./exercise/images/1000050636.gif]]
+[[./exercise/images/20220105_092052.gif]]
+[[./exercise/images/1000051558.gif]]
 
 This project is actively growing—new exercises and routines are added every week to help you stay healthy and pain-free at your desk.
 I'm also working to make it easier to find the right exercise for you: soon, all exercises will be categorized by body area (neck, back, hips, knees, ankles) and by difficulty.
