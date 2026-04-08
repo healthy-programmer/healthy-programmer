@@ -10,7 +10,7 @@ import csv
 import json
 
 from datetime import datetime, timedelta
-from exerisise_log import ExerciseLogger, ExerciseLogViewer
+from exercise_log import ExerciseLogger, ExerciseLogViewer
 
 try:
     from tkinter import Tk, Label

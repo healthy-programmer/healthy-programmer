@@ -139,7 +139,7 @@ script/move_reminder.py
 script/setup_page.py
 exercise/reminder-data.md
 
-In folder script implement following file: script/exerisise_log.py with following features:
+In folder script implement following file: script/exercise_log.py with following features:
 - on every exercise (poped-up, or by next button pressed) create a log entry into file: exercise_log.log with following data:
 - date and time of the excercise, jpg file.
 - then implement log viewer screen accessible by pressing button "Log" from the reminder screen.
