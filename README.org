@@ -225,7 +225,11 @@ Standing all day, combined with regular movement and stretching, keeps my body a
 - [[file:./patterns/keep.org][Keep learning and playing!]]
 
 ---
-
+ 
+* AI-Assisted Development
+ 
+This project is being developed and maintained with the help of AI and user prompts. For more details and a record of the AI-driven development process, see the [[file:.ai/][.ai folder]] in this repository.
+ 
 Stay healthy, keep moving, and enjoy your work!
-
+ 
 Michal Kelemen
