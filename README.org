@@ -41,64 +41,88 @@ It pops up a random exercise GIF at regular intervals, reminding you to move, st
 - Activity logging and review: Track your exercise history with detailed logs and calendar views, including descriptions and images for each session.
 
 
-* How to Install & Run
+* Installation
 
 **Linux**
 
 1. Make sure you have Python 3 installed (with Tkinter).
 2. Open Terminal and run:
    #+BEGIN_SRC shell
-   ./script/run_move_reminder.sh --interval 60 --duration 30 --position bottom-right --working-hours 8:00-16:30
+   ./script/install_move_reminder.sh
    #+END_SRC
-   The script will:
+   This script will:
    - Detect the best Python interpreter with Tkinter.
    - Install pip, Pillow, tkcalendar if missing.
-   - Run the Move Reminder.
-
-   For a quick test:
-   #+BEGIN_SRC shell
-   ./script/run_move_reminder.sh --interval 1 --duration 15
-   #+END_SRC
 
 **MacOS**
 
 1. Make sure you have [Homebrew](https://brew.sh/) installed.
 2. Open Terminal and run:
    #+BEGIN_SRC shell
-   ./script/run_move_reminder_mac.sh --interval 60 --duration 30 --position bottom-right --working-hours 8:00-16:30
+   ./script/install_move_reminder_mac.sh
    #+END_SRC
    This script will:
    - Check for Python 3 and install via Homebrew if needed.
    - Ensure Tkinter, pip, Pillow, and tkcalendar are installed.
-   - Run the Move Reminder.
-
-   For a quick test:
-   #+BEGIN_SRC shell
-   ./script/run_move_reminder_mac.sh --interval 1 --duration 15
-   #+END_SRC
 
 **Windows**
 
 1. Make sure you have Python 3 installed. Download from [python.org](https://www.python.org/downloads/).
 2. Open Command Prompt and run:
    #+BEGIN_SRC bat
-   script\run_move_reminder.bat --interval 60 --duration 30 --position bottom-right --working-hours 8:00-16:30
+   script\install_move_reminder.bat
    #+END_SRC
-   The batch script will:
+   This script will:
    - Check for Python and pip.
    - Install Pillow and tkcalendar if missing.
-   - Run the Move Reminder.
-
-   For a quick test:
-   #+BEGIN_SRC bat
-   script\run_move_reminder.bat --interval 1 --duration 15
-   #+END_SRC
 
 **Troubleshooting**
 
-- If you see errors about missing Tkinter, Pillow, or tkcalendar, rerun the script or install them manually.
+- If you see errors about missing Tkinter, Pillow, or tkcalendar, rerun the install script or install them manually.
 - On Mac, make sure Homebrew is installed and up-to-date.
 - On Windows, ensure Python is added to your PATH.
+- On Linux, if you see an error like `ModuleNotFoundError: No module named '_tkinter'`, you are likely using a Homebrew Python that does not support Tkinter. Use your system Python (e.g., `/usr/bin/python3`) or install Tkinter with:
+  - `sudo apt install python3-tk`
+  - `sudo dnf install python3-tkinter`
+  - `sudo yum install python3-tkinter`
+  - `sudo pacman -Sy tk`
+  - If you must use Homebrew Python, try `brew reinstall python-tk` (not always reliable on Linux).
+
+---
+
+* Running
+
+After installation, you can run the Move Reminder at any time:
+
+**Linux**
+#+BEGIN_SRC shell
+./script/run_move_reminder.sh --interval 60 --duration 30 --position bottom-right --working-hours 8:00-16:30
+#+END_SRC
+
+For a quick test:
+#+BEGIN_SRC shell
+./script/run_move_reminder.sh --interval 1 --duration 15
+#+END_SRC
+
+**MacOS**
+#+BEGIN_SRC shell
+./script/run_move_reminder_mac.sh --interval 60 --duration 30 --position bottom-right --working-hours 8:00-16:30
+#+END_SRC
+
+For a quick test:
+#+BEGIN_SRC shell
+./script/run_move_reminder_mac.sh --interval 1 --duration 15
+#+END_SRC
+
+**Windows**
+#+BEGIN_SRC bat
+script\run_move_reminder.bat --interval 60 --duration 30 --position bottom-right --working-hours 8:00-16:30
+#+END_SRC
+
+For a quick test:
+#+BEGIN_SRC bat
+script\run_move_reminder.bat --interval 1 --duration 15
+#+END_SRC
 
 This will show you all available options.
 
