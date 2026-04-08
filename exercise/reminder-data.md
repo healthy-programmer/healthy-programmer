@@ -111,3 +111,21 @@ Interlock your fingers behind your back. If you can't do this, use a towel or si
 **Action:** stretch
 **Category:** standing
 Open your chest, belly keep strong. Move your arms from left to right with your elbows bent, then repeat the movement with your arms straight. Next, move your arms up and down to increase the full range of motion in your stiff shoulders.
+
+## 1000051556.gif
+**Area:** side abs
+**Action:** strengthen
+**Category:** standing
+Hold a 1 or 2 kg weight. Stand tall with your chest open and arms raised overhead, holding the weight. Engage your glutes and core. Slowly bend from side to side, focusing on feeling the stretch and contraction in your side abs.
+
+## 1000051557.gif
+**Area:** shoulder rotators
+**Action:** strengthen/stretch
+**Category:** standing
+Stand tall and bend your elbows. Rotate your arms from an overhead position to the front, keeping your shoulders and elbows aligned throughout the movement.
+
+## 1000051558.gif
+**Area:** quadriceps
+**Action:** stretch
+**Category:** standing
+Stand tall and engage your core and abdominal muscles. Then, grab your foot and gently pull it upward. You should feel a stretch in your quadriceps. Repeat with the other leg.
