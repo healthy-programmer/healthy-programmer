@@ -238,8 +238,7 @@ original value. Counter is not updated based on new config value.
 I don't like the smell or duplicity regarding personalized_gifs = [] and related code
 and the selected_gifs ... it should be some common functionality and reused.
 
-
-
+# 31) Extract load_gif_descriptions into exercise_portfolio.py
 
 
 

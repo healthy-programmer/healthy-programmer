@@ -29,47 +29,11 @@ except ImportError:
 GIF_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/images')
 DATA_MD = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/reminder-data.md')
 
-def load_gif_descriptions():
-    mapping = {}
-    current_gif = None
-    area = None
-    action = None
-    desc_lines = []
-    with open(DATA_MD, encoding='utf-8') as mdfile:
-        for line in mdfile:
-            line = line.rstrip('\n')
-            if line.startswith('## '):
-                if current_gif:
-                    mapping[current_gif] = {
-                        "description": '\n'.join(desc_lines).strip(),
-                        "area": area,
-                        "action": action
-                    }
-                current_gif = line[3:].strip()
-                area = None
-                action = None
-                desc_lines = []
-            elif current_gif is not None:
-                if line.startswith('**Area:**'):
-                    area = line.split('**Area:**', 1)[1].strip().strip()
-                elif line.startswith('**Action:**'):
-                    action = line.split('**Action:**', 1)[1].strip().strip()
-                elif line.strip() == '':
-                    continue
-                else:
-                    desc_lines.append(line)
-        # Add last gif
-        if current_gif:
-            mapping[current_gif] = {
-                "description": '\n'.join(desc_lines).strip(),
-                "area": area,
-                "action": action
-            }
-    return mapping
+from exercise_portfolio import load_gif_descriptions
 
 def get_gif_files():
     # Only GIFs referenced in reminder-data.csv
-    gif_desc_map = load_gif_descriptions()
+    gif_desc_map = load_gif_descriptions(DATA_MD)
     csv_gifs = set(gif_desc_map.keys())
     return [
         os.path.join(GIF_DIR, f)
@@ -129,7 +93,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
 
         # Load all gif files and descriptions for "Next exercise"
         gif_files = get_gif_files()
-        gif_desc_map = load_gif_descriptions()
+        gif_desc_map = load_gif_descriptions(DATA_MD)
 
         root = Tk()
         root.title("Move Reminder!")
@@ -501,7 +465,7 @@ def main():
         print(f"No GIF files found in {GIF_DIR} or personalized config.")
         sys.exit(1)
 
-    gif_desc_map = load_gif_descriptions()
+    gif_desc_map = load_gif_descriptions(DATA_MD)
 
     interval = general_config["interval"]
     duration = general_config["duration"]
