@@ -31,6 +31,7 @@ DATA_MD = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/
 
 from exercise_portfolio import load_gif_descriptions, get_gif_files
 from ui_utils import animate_gif
+from config_utils import get_active_gif_list
 
 # Show a GIF reminder popup, using either Tkinter or feh, and restore focus after display.
 def show_gif(gif_path, description="", duration=30, position="bottom-right", general_config=None, config_changed=None):
@@ -441,46 +442,59 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
 
 # Main entry point for the move reminder application.
 def main():
-    import threading
+    """
+    Main entry point for the move reminder application.
 
+    Parses command-line arguments, loads configuration and exercise portfolio,
+    and starts the reminder loop that periodically shows exercise GIFs during working hours.
+    """
+    # Parse command-line arguments (e.g., --interval, --duration, etc.)
     args = parse_args()
 
+    # Build the path to the personal configuration file
     config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personal_setup.json")
-    config_changed = [False]  # Mutable flag to allow modification from inner scope
-
-    # (Moved open_setup_and_set_flag above to avoid NameError)
-
+    # Mutable flag to detect if config was changed in the UI
+    config_changed = [False]
+    # Load all available GIFs, selected GIFs, and general config from the config file
     gif_files, selected_gifs, general_config = load_config_and_gifs(config_path, get_gif_files)
+    # Exit if no GIFs are found (cannot run reminders)
     if not gif_files:
         print(f"No GIF files found in {GIF_DIR} or personalized config.")
         sys.exit(1)
-
+    # Load the mapping of GIF filenames to their descriptions, areas, and actions
     gif_desc_map = load_gif_descriptions(DATA_MD)
 
-    interval = general_config["interval"]
-    duration = general_config["duration"]
-    position = general_config["position"]
-    working_hours = general_config["working_hours"]
+    # Extract reminder parameters from config
+    interval = general_config["interval"]        # Minutes between reminders
+    duration = general_config["duration"]        # How long the popup stays visible
+    position = general_config["position"]        # Where to display the popup
+    working_hours = general_config["working_hours"]  # Time range for reminders
 
-    # Always filter gif_files by selected_gifs from personal_setup.json if present
-    from config_utils import get_active_gif_list
+    # Filter GIFs to only those selected in the config (if any)
     gif_files = get_active_gif_list(gif_files, selected_gifs)
 
+    # Print startup info
     print(f"Move reminder started! Every {interval} minutes a random exercise GIF will pop up.")
     print("Press Ctrl+C to stop.")
 
     try:
+        # Parse working hours into start/end hour and minute
         (start_h, start_m), (end_h, end_m) = parse_working_hours(working_hours)
 
         while True:
+            # Get the current time
             now = datetime.now()
+            # Check if we are within working hours
             if is_within_working_hours(now, start_h, start_m, end_h, end_m):
+                # Pick a random GIF from the available list
                 gif_path = random.choice(gif_files)
                 gif_name = os.path.basename(gif_path)
+                # Get description, area, and action for the selected GIF
                 gif_info = gif_desc_map.get(gif_name, {})
                 description = gif_info.get("description", "")
                 area = gif_info.get("area", "")
                 action = gif_info.get("action", "")
+                # Print info about the selected exercise
                 print(f"[{now:%Y-%m-%d %H:%M:%S}] Showing: {gif_name}")
                 if description:
                     print(f"Description: {description}")
@@ -488,6 +502,7 @@ def main():
                     print(f"Area: {area}")
                 if action:
                     print(f"Action: {action}")
+                # Show the GIF popup reminder
                 show_gif(
                     gif_path,
                     description=description,
@@ -497,17 +512,18 @@ def main():
                     config_changed=config_changed
                 )
             else:
+                # If outside working hours, skip showing a reminder
                 print(f"[{now:%Y-%m-%d %H:%M:%S}] Outside working hours ({working_hours}), skipping reminder.")
 
-            # After closing the reminder popup, immediately restart timer and log new time
+            # Calculate when the next reminder should occur
             next_reminder_time = datetime.now() + timedelta(minutes=interval)
             seconds_remaining = interval * 60
 
-            # If next reminder would be outside working hours, sleep until working hours resume
+            # Wait until it's time for the next reminder, handling config reloads and working hours
             while seconds_remaining > 0:
                 now = datetime.now()
                 if config_changed[0]:
-                    # Reload config and update variables
+                    # If config was changed in the UI, reload all config and update variables
                     gif_files, selected_gifs, general_config = load_config_and_gifs(config_path, get_gif_files)
                     interval = general_config["interval"]
                     duration = general_config["duration"]
@@ -516,12 +532,13 @@ def main():
                     (start_h, start_m), (end_h, end_m) = parse_working_hours(working_hours)
                     print(f"[INFO] Config reloaded: interval={interval}, duration={duration}, position={position}, working_hours={working_hours}")
                     config_changed[0] = False
-                    # Immediately restart timer and log new time
+                    # Restart timer for next reminder
                     next_reminder_time = datetime.now() + timedelta(minutes=interval)
                     print(f"[DEBUG] Time to next exercise: {interval}m 0s")
                     seconds_remaining = interval * 60
                     break
                 if not is_within_working_hours(now, start_h, start_m, end_h, end_m):
+                    # If outside working hours, calculate how long to sleep until working hours resume
                     today_start = now.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
                     if now < today_start:
                         wait_seconds = (today_start - now).total_seconds()
@@ -533,6 +550,7 @@ def main():
                     time.sleep(min(wait_seconds, seconds_remaining))
                     seconds_remaining -= min(wait_seconds, seconds_remaining)
                 else:
+                    # If within working hours, sleep in 1-minute increments until next reminder
                     time_left = next_reminder_time - now
                     minutes_left = int(time_left.total_seconds() // 60)
                     seconds_left = int(time_left.total_seconds() % 60)
@@ -541,6 +559,7 @@ def main():
                     time.sleep(sleep_time)
                     seconds_remaining -= sleep_time
     except KeyboardInterrupt:
+        # Handle Ctrl+C gracefully
         print("\nMove reminder stopped.")
 if __name__ == "__main__":
     main()

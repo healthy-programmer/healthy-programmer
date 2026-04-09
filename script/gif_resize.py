@@ -41,6 +41,12 @@ def resize_gif(gif_path, output_path, thumb_height=THUMB_HEIGHT):
         print(f"Error resizing {gif_path}: {e}")
 
 def main():
+    """
+    Main entry point for the GIF resizing utility.
+
+    Ensures the output directory exists, then resizes all GIF files in the source directory
+    to the target thumbnail height and saves them to the output directory.
+    """
     if not os.path.exists(RESIZED_DIR):
         os.makedirs(RESIZED_DIR)
     gif_files = [f for f in os.listdir(GIF_DIR) if f.lower().endswith('.gif')]
