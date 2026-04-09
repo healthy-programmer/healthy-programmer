@@ -11,6 +11,7 @@ from exercise_portfolio import load_gif_descriptions
 
 from tkinter import ttk  # For tabs
 
+# Open the setup page window for personalizing exercise reminders.
 def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     setup_win = Toplevel(parent)
     setup_win.title("Personalize Exercises")
@@ -23,6 +24,7 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personal_setup.json")
 
     # Use config_utils.load_config_and_gifs for config loading
+    # Retrieve all available GIF files that have descriptions.
     def get_gif_files():
         # Load all GIFs from the resized images directory, filtered by those present in the descriptions
         images_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/images/resized')
@@ -107,11 +109,13 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     scrollbar.pack(side="right", fill="y")
     canvas.create_window((0,0), window=frame, anchor="nw")
 
+    # Update the scroll region when the frame is resized.
     def on_frame_configure(event):
         canvas.configure(scrollregion=canvas.bbox("all"))
     frame.bind("<Configure>", on_frame_configure)
 
     # Mouse wheel binding helper (unified with log screen)
+    # Bind mouse wheel events to a widget for scrolling.
     def _bind_mousewheel_to_widget(widget):
         widget.bind("<MouseWheel>", lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
         widget.bind("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
@@ -145,10 +149,12 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     for cat in categories:
         cb = Checkbutton(category_row, text=cat, variable=category_vars[cat], background="#e0e0e0", font=("Arial", 10))
         cb.pack(side="left", padx=(2,2))
+    # Select all exercise categories in the filter.
     def select_all_categories():
         for var in category_vars.values():
             var.set(1)
         update_gif_rows()
+    # Deselect all exercise categories in the filter.
     def deselect_all_categories():
         for var in category_vars.values():
             var.set(0)
@@ -166,10 +172,12 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     anim_states = {}
     row_frames = {}
 
+    # Update the label showing the count of selected exercises.
     def update_selected_count():
         count = sum(var.get() for var in checkbox_vars.values())
         selected_count_label.config(text=f"Selected: {count}")
 
+    # Update the background color of each row based on selection state.
     def update_row_backgrounds():
         for gif_name, var in checkbox_vars.items():
             bg = "#d8f5d3" if var.get() == 1 else "#f0f0f0"
@@ -181,6 +189,7 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
                     child.config(background=bg)
 
 
+    # Load and resize frames from a GIF for use as a thumbnail.
     def load_gif_frames_for_thumb(gif_path):
         img = Image.open(gif_path)
         frames = []
@@ -279,6 +288,7 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
 
         return row_frame
 
+    # Update the displayed GIF rows based on selected categories.
     def update_gif_rows():
         # Remove all rows
         for data in gif_row_data:
@@ -301,6 +311,7 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     update_gif_rows()
 
 
+    # Save the current configuration and selected exercises to file.
     def save_config():
         selected = [name for name, var in checkbox_vars.items() if var.get() == 1]
         try:
@@ -323,12 +334,14 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
         except Exception as e:
             save_label.config(text=f"Error: {e}", fg="red")
 
+    # Select all exercises in the list.
     def select_all():
         for var in checkbox_vars.values():
             var.set(1)
         update_selected_count()
         update_row_backgrounds()
 
+    # Deselect all exercises in the list.
     def deselect_all():
         for var in checkbox_vars.values():
             var.set(0)
@@ -338,6 +351,7 @@ def open_setup_page(parent, reset_timer_callback, cancel_timer_callback):
     select_all_btn.config(command=select_all)
     deselect_all_btn.config(command=deselect_all)
     save_btn.config(command=save_config)
+    # Handle closing the setup window, reloading config and resetting the timer.
     def on_setup_close():
         # Reload config from file before resetting timer
         config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personal_setup.json")

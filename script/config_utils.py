@@ -1,6 +1,7 @@
 import os
 import json
 
+# Load all GIF files, selected GIFs, and general configuration from the config file.
 def load_config_and_gifs(config_path, get_gif_files):
     """
     Load all GIF files, selected GIFs, and general configuration from the given config_path.
@@ -34,6 +35,7 @@ def load_config_and_gifs(config_path, get_gif_files):
             pass
     return all_gif_files, selected_gifs, general_config
 
+# Save the general configuration and selected GIFs to the config file.
 def save_config_to_file(config_path, general_config, selected_gifs):
     """
     Save the general configuration and selected GIFs to the given config_path.
@@ -43,6 +45,7 @@ def save_config_to_file(config_path, general_config, selected_gifs):
     with open(config_path, "w", encoding="utf-8") as f:
         json.dump(config_data, f, indent=2)
 
+# Return a list of active GIF file paths, filtered by selected_gifs and optionally excluding the current GIF.
 def get_active_gif_list(all_gif_files, selected_gifs, current_gif=None):
     """
     Return a list of GIF file paths to use, based on selected_gifs (by basename).

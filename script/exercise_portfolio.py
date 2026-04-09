@@ -1,3 +1,10 @@
+import os
+
+# Directory containing GIF images and path to the reminder-data markdown.
+GIF_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/images')
+DATA_MD = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/reminder-data.md')
+
+# Parse a markdown file with GIF descriptions and return a mapping of GIF names to their details.
 def load_gif_descriptions(data_md_path):
     """
     Parse a markdown file with GIF descriptions and return a mapping.
@@ -50,3 +57,13 @@ def load_gif_descriptions(data_md_path):
                 "category": category
             }
     return mapping
+
+# Retrieve all GIF files that are referenced in the reminder-data markdown.
+def get_gif_files():
+    gif_desc_map = load_gif_descriptions(DATA_MD)
+    csv_gifs = set(gif_desc_map.keys())
+    return [
+        os.path.join(GIF_DIR, f)
+        for f in os.listdir(GIF_DIR)
+        if f.lower().endswith('.gif') and f in csv_gifs
+    ]

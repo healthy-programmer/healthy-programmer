@@ -1,5 +1,6 @@
 import argparse
 
+# Parse command-line arguments for the move reminder application.
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Remind yourself to move every N minutes by popping up a random exercise GIF."

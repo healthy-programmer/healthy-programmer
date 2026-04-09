@@ -245,6 +245,7 @@ and the selected_gifs ... it should be some common functionality and reused.
 
 
 
+
 # 27)
 Multi languge support. We need this application to be delivered in 4 languages: EN (default), Espanol, Deutsh, Franch.
 Selected language is the setup argument

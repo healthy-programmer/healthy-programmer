@@ -29,31 +29,10 @@ except ImportError:
 GIF_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/images')
 DATA_MD = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../exercise/reminder-data.md')
 
-from exercise_portfolio import load_gif_descriptions
+from exercise_portfolio import load_gif_descriptions, get_gif_files
+from ui_utils import animate_gif
 
-def get_gif_files():
-    # Only GIFs referenced in reminder-data.csv
-    gif_desc_map = load_gif_descriptions(DATA_MD)
-    csv_gifs = set(gif_desc_map.keys())
-    return [
-        os.path.join(GIF_DIR, f)
-        for f in os.listdir(GIF_DIR)
-        if f.lower().endswith('.gif') and f in csv_gifs
-    ]
-
-def animate_gif(label, frames, delay, frame_idx=0, anim_state=None):
-    frame = frames[frame_idx]
-    label.config(image=frame)
-    label.image = frame
-    next_idx = (frame_idx + 1) % len(frames)
-    # Cancel previous animation if anim_state is provided
-    if anim_state is not None:
-        if anim_state["timer_id"]:
-            label.after_cancel(anim_state["timer_id"])
-        anim_state["timer_id"] = label.after(delay, animate_gif, label, frames, delay, next_idx, anim_state)
-    else:
-        label.after(delay, animate_gif, label, frames, delay, next_idx)
-
+# Show a GIF reminder popup, using either Tkinter or feh, and restore focus after display.
 def show_gif(gif_path, description="", duration=30, position="bottom-right", general_config=None, config_changed=None):
     """
     Show a GIF as a reminder, preferring 'feh' if available to avoid stealing focus.
@@ -62,6 +41,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
     """
     import subprocess
 
+    # Get the window id of the currently focused window using xdotool.
     def get_focused_window():
         """Return the window id of the currently focused window using xdotool, or None."""
         try:
@@ -70,6 +50,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
         except Exception:
             return None
 
+    # Restore focus to the given window id using xdotool.
     def restore_focus(win_id):
         """Restore focus to the given window id using xdotool."""
         if win_id:
@@ -99,6 +80,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
         root.title("Move Reminder!")
 
         # Helper to load gif frames (must pass root as master)
+        # Load all frames from a GIF for animation in the popup.
         def load_gif_frames(gif_path):
             img = Image.open(gif_path)
             frames = []
@@ -253,6 +235,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
         # Timer logic
         timer_id = [None]
 
+        # Reset the timer for the popup window auto-close.
         def reset_timer():
             # Always cancel previous timer and set a new one
             try:
@@ -367,6 +350,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
         btn = Button(button_frame, text="Next", command=next_exercise, font=("Arial", 10), width=6, height=2)
         btn.pack(side="left", padx=(6,2), pady=4, fill="x", expand=True)
 
+        # Close the popup and set the config_changed flag if needed.
         def close_and_debug():
             if config_changed is not None:
                 config_changed[0] = True
@@ -377,6 +361,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
         close_btn.pack(side="right", padx=(2,6), pady=4, fill="x", expand=True)
 
         # Log button
+        # Open the exercise log viewer window.
         def open_log_viewer():
             # Pause timer when log screen opens
             cancel_timer()
@@ -391,6 +376,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
 
         # Pass general_config to setup page
 
+        # Cancel the current timer for the popup window.
         def cancel_timer():
             try:
                 if timer_id[0]:
@@ -400,6 +386,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
                 pass
 
         # Move open_setup_and_set_flag definition here so it is available for the lambda below
+        # Open the setup page and set the config_changed flag if configuration is updated.
         def open_setup_and_set_flag(parent, config_changed_flag=None):
             from setup_page import open_setup_page
             def reset_timer_callback():
@@ -432,9 +419,11 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
 
         root.mainloop()
 
+    # Show the GIF using the feh image viewer (if available).
     def _show_with_feh():
         os.system(f"feh --auto-zoom --no-raise --no-focus -Y -D {duration} '{gif_path}' &")
 
+    # Show the GIF reminder using the preferred method and restore focus after display.
     def _show():
         # Save the currently focused window id
         win_id = get_focused_window()
@@ -450,6 +439,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
     t = threading.Thread(target=_show)
     t.start()
 
+# Main entry point for the move reminder application.
 def main():
     import threading
 
