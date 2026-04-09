@@ -9,11 +9,13 @@ import threading
 popup_open = threading.Event()
 import csv
 import json
+import textwrap
 
 from datetime import datetime, timedelta
 from exercise_log import ExerciseLogger, ExerciseLogViewer
 from lib import parse_working_hours, is_within_working_hours
 from config_utils import load_config_and_gifs
+from tkinter import Text, Scrollbar, Frame, BOTH, RIGHT, Y, Button
 
 try:
     from tkinter import Tk, Label
@@ -71,8 +73,6 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
                 "position": "bottom-right",
                 "working_hours": "8:00-16:30"
             }
-        import textwrap
-        from tkinter import Text, Scrollbar, Frame, BOTH, RIGHT, Y, Button
 
         # Set popup_open flag when popup is created
         popup_open.set()
@@ -497,41 +497,47 @@ def main():
         # Parse working hours into start/end hour and minute
         (start_h, start_m), (end_h, end_m) = parse_working_hours(working_hours)
 
+        # Track the last time a popup was shown
+        last_popup_time = datetime.now() - timedelta(minutes=interval)
         while True:
             # Get the current time
             now = datetime.now()
             # Check if we are within working hours
             if is_within_working_hours(now, start_h, start_m, end_h, end_m):
-                # Pick a random GIF from the available list
-                gif_path = random.choice(gif_files)
-                gif_name = os.path.basename(gif_path)
-                # Get description, area, and action for the selected GIF
-                gif_info = gif_desc_map.get(gif_name, {})
-                description = gif_info.get("description", "")
-                area = gif_info.get("area", "")
-                action = gif_info.get("action", "")
-                # Print info about the selected exercise
-                print(f"[{now:%Y-%m-%d %H:%M:%S}] Showing: {gif_name}")
-                if description:
-                    print(f"Description: {description}")
-                if area:
-                    print(f"Area: {area}")
-                if action:
-                    print(f"Action: {action}")
-                # Show the GIF popup reminder
-                if not popup_open.is_set():
-                    popup_open.set()
-                    show_gif(
-                        gif_path,
-                        description=description,
-                        duration=duration,
-                        position=position,
-                        general_config=general_config,
-                        config_changed=config_changed,
-                        timer_reset=timer_reset
-                    )
-                else:
-                    print("[DEBUG] Popup already open, skipping new popup.")
+                # Only show popup if enough time has passed since last popup
+                if (now - last_popup_time).total_seconds() >= interval * 60:
+                    # Pick a random GIF from the available list
+                    gif_path = random.choice(gif_files)
+                    gif_name = os.path.basename(gif_path)
+                    # Get description, area, and action for the selected GIF
+                    gif_info = gif_desc_map.get(gif_name, {})
+                    description = gif_info.get("description", "")
+                    area = gif_info.get("area", "")
+                    action = gif_info.get("action", "")
+                    # Print info about the selected exercise
+                    print(f"[{now:%Y-%m-%d %H:%M:%S}] Showing: {gif_name}")
+                    if description:
+                        print(f"Description: {description}")
+                    if area:
+                        print(f"Area: {area}")
+                    if action:
+                        print(f"Action: {action}")
+                    # Show the GIF popup reminder
+                    if not popup_open.is_set():
+                        popup_open.set()
+                        print("SME TU !!!")
+                        show_gif(
+                            gif_path,
+                            description=description,
+                            duration=duration,
+                            position=position,
+                            general_config=general_config,
+                            config_changed=config_changed,
+                            timer_reset=timer_reset
+                        )
+                        last_popup_time = now
+                    else:
+                        print("[DEBUG] Popup already open, skipping new popup.")
             else:
                 # If outside working hours, skip showing a reminder
                 print(f"[{now:%Y-%m-%d %H:%M:%S}] Outside working hours ({working_hours}), skipping reminder.")
