@@ -11,6 +11,8 @@ import json
 
 from datetime import datetime, timedelta
 from exercise_log import ExerciseLogger, ExerciseLogViewer
+from lib import parse_working_hours, is_within_working_hours
+from config_utils import load_config_and_gifs
 
 try:
     from tkinter import Tk, Label
@@ -88,7 +90,7 @@ def animate_gif(label, frames, delay, frame_idx=0, anim_state=None):
     else:
         label.after(delay, animate_gif, label, frames, delay, next_idx)
 
-def show_gif(gif_path, description="", duration=30, position="bottom-right"):
+def show_gif(gif_path, description="", duration=30, position="bottom-right", general_config=None, config_changed=None):
     """
     Show a GIF as a reminder, preferring 'feh' if available to avoid stealing focus.
     After showing, restore focus to the previously active window using xdotool if available.
@@ -113,6 +115,15 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
                 pass
 
     def _show_with_tkinter():
+        nonlocal general_config
+        nonlocal config_changed
+        if general_config is None:
+            general_config = {
+                "interval": 30,
+                "duration": 30,
+                "position": "bottom-right",
+                "working_hours": "8:00-16:30"
+            }
         import textwrap
         from tkinter import Text, Scrollbar, Frame, BOTH, RIGHT, Y, Button
 
@@ -286,25 +297,28 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             except Exception:
                 pass
             timer_id[0] = root.after(duration * 1000, root.destroy)
+            minutes = general_config["interval"] if general_config and "interval" in general_config else 30
+            print(f"[DEBUG] Time to next exercise: {minutes}m 0s")
 
         reset_timer()
 
         def next_exercise():
-            # Filter exercises based on personalized configuration
+            # Always read selected_gifs from personal_setup.json
+            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personal_setup.json")
             personalized_gifs = []
-            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personalized_exercises.json")
             if os.path.exists(config_path):
                 try:
                     with open(config_path, "r", encoding="utf-8") as f:
-                        personalized_gifs = json.load(f)
-                except json.JSONDecodeError:
-                    print("[DEBUG] Error: Malformed JSON in personalized configuration. Falling back to all exercises.")
-                    personalized_gifs = []
+                        config_data = json.load(f)
+                        if isinstance(config_data, dict):
+                            personalized_gifs = config_data.get("selected_gifs", [])
+                        elif isinstance(config_data, list):
+                            personalized_gifs = config_data
                 except Exception as e:
-                    print(f"[DEBUG] Error loading personalized configuration: {e}. Falling back to all exercises.")
+                    print(f"[DEBUG] Error loading personalized config: {e}")
                     personalized_gifs = []
             else:
-                print("[DEBUG] Personalized configuration file not found. Falling back to all exercises.")
+                print("[DEBUG] personal_setup.json not found. Using all exercises.")
 
             # Fallback to all exercises if personalized config is empty
             if not personalized_gifs:
@@ -313,7 +327,6 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
 
             # Pick a new random gif (not the current one) ONLY from checked (included) exercises
             available = [f for f in gif_files if f != current["gif_path"] and os.path.basename(f) in personalized_gifs]
-            # Only show exercises in personalized_gifs; if only one is available, do nothing
             if not available:
                 print("[DEBUG] No available personalized exercises to choose from.")
                 return
@@ -323,18 +336,13 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             new_desc = gif_info.get("description", "")
             new_area = gif_info.get("area", "")
             new_action = gif_info.get("action", "")
-            # Log the description for debugging
             print(f"[DEBUG] Next exercise: {new_name}, description: '{new_desc}'")
-            # If description is empty or suspicious, set a default
             if not new_desc or new_desc.strip() == "!!":
                 new_desc = "No description available for this exercise."
-            # Log the exercise event
             ExerciseLogger.log_exercise(new_gif, new_desc, new_area, new_action)
-            # Load new frames
             frames, delay, (width, height) = load_gif_frames(new_gif)
             if not frames:
                 return
-            # Estimate new description height
             area_action_height = 80
             button_height = 70
             desc_min_height = 60
@@ -354,11 +362,9 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             else:
                 display_width = width
 
-            # Enforce minimum window width for buttons
             min_window_width = 350
             window_width = max(display_width, min_window_width)
 
-            # Calculate position (recompute x, y)
             screen_width = root.winfo_screenwidth()
             screen_height = root.winfo_screenheight()
             if position == "top-left":
@@ -378,7 +384,6 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
 
             root.geometry(f"{window_width}x{total_height}+{x}+{y}")
 
-            # Update state
             current["gif_path"] = new_gif
             current["description"] = new_desc
             current["area"] = new_area
@@ -387,9 +392,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             current["delay"] = delay
             current["width"] = width
             current["height"] = height
-            # Cancel previous animation and start new one
             animate_gif(label, frames, delay, 0, anim_state)
-            # If GIF is scaled, resize frames
             if subsample_factor > 1:
                 resized_frames = []
                 for frame in frames:
@@ -397,23 +400,18 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
                     resized_frames.append(img)
                 current["frames"] = resized_frames
                 animate_gif(label, resized_frames, delay, 0, anim_state)
-            # Update area and action labels
             area_label.config(text=f"Area: {new_area}", wraplength=window_width-10)
             action_label.config(text=f"Action: {new_action}", wraplength=window_width-10)
-            # Update description
             text_widget.config(state="normal")
             text_widget.delete("1.0", "end")
             text_widget.insert("1.0", new_desc)
             text_widget.config(state="disabled")
-            # Update text widget height
             text_widget.config(height=int(desc_height/20))
-            # Add scrollbar if needed
             if len(wrapped) > desc_height // 20 or total_height > root.winfo_screenheight() or desc_height == desc_max_height:
                 if not any(isinstance(w, Scrollbar) for w in desc_frame.winfo_children()):
                     scrollbar = Scrollbar(desc_frame, command=text_widget.yview)
                     text_widget.config(yscrollcommand=scrollbar.set)
                     scrollbar.pack(side=RIGHT, fill=Y)
-            # Reset timer
             reset_timer()
 
         # Button frame at the bottom for both buttons
@@ -423,7 +421,13 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         btn = Button(button_frame, text="Next", command=next_exercise, font=("Arial", 10), width=6, height=2)
         btn.pack(side="left", padx=(6,2), pady=4, fill="x", expand=True)
 
-        close_btn = Button(button_frame, text="Close", command=root.destroy, font=("Arial", 10), width=6, height=2)
+        def close_and_debug():
+            if config_changed is not None:
+                config_changed[0] = True
+            reset_timer()
+            root.destroy()
+
+        close_btn = Button(button_frame, text="Close", command=close_and_debug, font=("Arial", 10), width=6, height=2)
         close_btn.pack(side="right", padx=(2,6), pady=4, fill="x", expand=True)
 
         # Log button
@@ -439,6 +443,8 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
         # Gear icon button (ozubene kolecko)
         from setup_page import open_setup_page
 
+        # Pass general_config to setup page
+
         def cancel_timer():
             try:
                 if timer_id[0]:
@@ -447,10 +453,27 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
             except Exception:
                 pass
 
+        # Move open_setup_and_set_flag definition here so it is available for the lambda below
+        def open_setup_and_set_flag(parent, config_changed_flag=None):
+            from setup_page import open_setup_page
+            def reset_timer_callback():
+                if config_changed_flag is not None:
+                    config_changed_flag[0] = True
+            def cancel_timer_callback():
+                pass
+            open_setup_page(parent, reset_timer_callback, cancel_timer_callback)
+
+        # Defensive: ensure general_config is always defined
+        config_for_setup = general_config if 'general_config' in locals() else {
+            "interval": 30,
+            "duration": 30,
+            "position": "bottom-right",
+            "working_hours": "8:00-16:30"
+        }
         gear_btn = Button(
             button_frame,
             text="⚙️",
-            command=lambda: open_setup_page(root, reset_timer, cancel_timer),
+            command=lambda: open_setup_and_set_flag(root, config_changed),
             font=("Arial", 12),
             width=3,
             height=2
@@ -481,6 +504,8 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right"):
     t.start()
 
 def main():
+    import threading
+
     parser = argparse.ArgumentParser(
         description="Remind yourself to move every N minutes by popping up a random exercise GIF."
     )
@@ -511,57 +536,36 @@ def main():
     )
     args = parser.parse_args()
 
-    gif_files = get_gif_files()
-    # Personalized config logic
-    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personalized_exercises.json")
-    personalized_gifs = []
-    if os.path.exists(config_path):
-        try:
-            import json
-            with open(config_path, "r", encoding="utf-8") as f:
-                personalized_gifs = json.load(f)
-            # Only use personalized list if it contains at least one valid gif
-            if personalized_gifs:
-                gif_files = [f for f in gif_files if os.path.basename(f) in personalized_gifs]
-        except Exception:
-            pass
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personal_setup.json")
+    config_changed = [False]  # Mutable flag to allow modification from inner scope
+
+    # (Moved open_setup_and_set_flag above to avoid NameError)
+
+    gif_files, selected_gifs, general_config = load_config_and_gifs(config_path, get_gif_files)
     if not gif_files:
         print(f"No GIF files found in {GIF_DIR} or personalized config.")
         sys.exit(1)
 
     gif_desc_map = load_gif_descriptions()
 
-    print(f"Move reminder started! Every {args.interval} minutes a random exercise GIF will pop up.")
+    interval = general_config["interval"]
+    duration = general_config["duration"]
+    position = general_config["position"]
+    working_hours = general_config["working_hours"]
+
+    # Always filter gif_files by selected_gifs from personal_setup.json if present
+    if isinstance(general_config, dict) and "selected_gifs" in general_config and general_config["selected_gifs"]:
+        gif_files = [f for f in gif_files if os.path.basename(f) in general_config["selected_gifs"]]
+
+    print(f"Move reminder started! Every {interval} minutes a random exercise GIF will pop up.")
     print("Press Ctrl+C to stop.")
 
     try:
-        log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../exercise/reminder-log.txt")
-
-        # Parse working hours
-        def parse_working_hours(whours):
-            try:
-                start_str, end_str = whours.split("-")
-                start_h, start_m = map(int, start_str.strip().split(":"))
-                end_h, end_m = map(int, end_str.strip().split(":"))
-                return (start_h, start_m), (end_h, end_m)
-            except Exception:
-                print("Invalid --working-hours format. Use e.g. 8:00-16:30")
-                sys.exit(1)
-
-        (start_h, start_m), (end_h, end_m) = parse_working_hours(args.working_hours)
-
-        def is_within_working_hours(dt):
-            start = dt.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
-            end = dt.replace(hour=end_h, minute=end_m, second=0, microsecond=0)
-            if end <= start:
-                # Overnight shift (e.g. 22:00-06:00)
-                return dt >= start or dt <= end
-            else:
-                return start <= dt <= end
+        (start_h, start_m), (end_h, end_m) = parse_working_hours(working_hours)
 
         while True:
             now = datetime.now()
-            if is_within_working_hours(now):
+            if is_within_working_hours(now, start_h, start_m, end_h, end_m):
                 gif_path = random.choice(gif_files)
                 gif_name = os.path.basename(gif_path)
                 gif_info = gif_desc_map.get(gif_name, {})
@@ -578,26 +582,41 @@ def main():
                 show_gif(
                     gif_path,
                     description=description,
-                    duration=args.duration,
-                    position=args.position
+                    duration=duration,
+                    position=position,
+                    general_config=general_config,
+                    config_changed=config_changed
                 )
             else:
-                print(f"[{now:%Y-%m-%d %H:%M:%S}] Outside working hours ({args.working_hours}), skipping reminder.")
+                print(f"[{now:%Y-%m-%d %H:%M:%S}] Outside working hours ({working_hours}), skipping reminder.")
 
-            # Calculate next reminder time
-            next_reminder_time = datetime.now() + timedelta(minutes=args.interval)
-            seconds_remaining = args.interval * 60
+            # After closing the reminder popup, immediately restart timer and log new time
+            next_reminder_time = datetime.now() + timedelta(minutes=interval)
+            seconds_remaining = interval * 60
 
             # If next reminder would be outside working hours, sleep until working hours resume
             while seconds_remaining > 0:
                 now = datetime.now()
-                if not is_within_working_hours(now):
-                    # Calculate time until working hours start
+                if config_changed[0]:
+                    # Reload config and update variables
+                    gif_files, selected_gifs, general_config = load_config_and_gifs(config_path, get_gif_files)
+                    interval = general_config["interval"]
+                    duration = general_config["duration"]
+                    position = general_config["position"]
+                    working_hours = general_config["working_hours"]
+                    (start_h, start_m), (end_h, end_m) = parse_working_hours(working_hours)
+                    print(f"[INFO] Config reloaded: interval={interval}, duration={duration}, position={position}, working_hours={working_hours}")
+                    config_changed[0] = False
+                    # Immediately restart timer and log new time
+                    next_reminder_time = datetime.now() + timedelta(minutes=interval)
+                    print(f"[DEBUG] Time to next exercise: {interval}m 0s")
+                    seconds_remaining = interval * 60
+                    break
+                if not is_within_working_hours(now, start_h, start_m, end_h, end_m):
                     today_start = now.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
                     if now < today_start:
                         wait_seconds = (today_start - now).total_seconds()
                     else:
-                        # Next working day
                         tomorrow = now + timedelta(days=1)
                         next_start = tomorrow.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
                         wait_seconds = (next_start - now).total_seconds()
@@ -614,6 +633,5 @@ def main():
                     seconds_remaining -= sleep_time
     except KeyboardInterrupt:
         print("\nMove reminder stopped.")
-
 if __name__ == "__main__":
     main()

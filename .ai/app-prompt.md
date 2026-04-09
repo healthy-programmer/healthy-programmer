@@ -186,3 +186,52 @@ and than change the README.org accordingly.
 The app is being deveoped and maintained with AI and user prompts in folder .ai. I would like to add this information
 somewhere into bottom of the README.org. And than I want to push the .ai Folder int git. Mention the cross reference
 into this folder in that paragraph about AI.
+
+# 26)
+Read the script folder, especially setup_page.py. Now what i want you to do is, that all CLI arguments
+should appear as an alternative in the setup page. If the script is executed without arguments, these values
+are taken into consideration. If executed with arguments, arguments will apply. When the script is executed
+and user changes the settings via setup page. apply them imediately.
+Mind that the current setup of selected exercises is stored in: script/personalized_exercises.json.
+So maybe this should be renamed more generally like personal_setup.json and the config attribtes to be added there.
+UX: Now on setup page there is list of exercises to be selected. How about to to create 2 tabs: 1 tab: general setup,
+2 tab: selected excerices. Implement this requirement.
+
+Additional prompts (bug fixing or this dificult one)
+
+ - Add 1) the GRID with the exercises are not part of the Selected Exercises TAB. They are displayed always.
+ - Add 2) i think that you are not reading exercises from new structure of personal_setup.json. i can see that they are random.
+ - Add 3) Now I believe that buttons SAVE and CLOSE belong to the part of the window outside the TAB container to be visible regardless the tab selected
+ - Add 4) i have changed the interval to 1 minute between exercises but it has no effect. Fix other attributes as well. and also write to the log that setup changed with new setup values.
+ - Add 5) sorry not to log file. But to the console debug. remove writing the log for this case.
+
+Michal's note: At this point I needed to understand the code, as AI is not helping a lot. This was too complex.
+
+# 27) Time for some refactor before continue. Too much of spagethi code for my tate
+
+- Extract methods def parse_working_hours(whours): def is_within_working_hours(dt): into lib.py
+- Extract method def load_config_and_gifs() into config_utils.py
+- In setup_page.py for reload config reuse method from config_utils.py load_config_and_gifs ... instead of this, no ?
+        with open(config_path, "r", encoding="utf-8") as f:
+            config_data = json.load(f) ...
+- No in setup page GIFs are not dummy. you need to load them properly. You need them for setting the data in 
+  second tab: selected exercises. So fully reload gifs from config and ammend this codes in setup_page.py
+  def _dummy_get_gif_files():
+  return []
+  _, general_config = load_config_and_gifs(config_path, _dummy_get_gif_files)
+  ///
+  config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personal_setup.json")
+  selected_gifs = set()
+  gif_files_for_selection, _ = load_config_and_gifs(config_path, _dummy_get_gif_files)
+  selected_gifs = set(os.path.basename(f) for f in gif_files_for_selection)
+- In a setup_page.py ... where you save the new config into personal_setup.json extract this code into config_utils.py
+
+# 28)
+After save_config_to_file is called, new data are not loaded in the move_reminder.py main loop. Maybe reload it via load_config_and_gifs ?
+I have changes interval from 2 to 5 minues.
+But after pressing CLOSE button on reminder screen, in console I see: [DEBUG] Time to next exercise: 2m 0s which was
+original value. Counter is not updated based on new config value.
+
+# 27)
+Multi languge support. We need this application to be delivered in 4 languages: EN (default), Espanol, Deutsh, Franch.
+Selected language is the setup argument
