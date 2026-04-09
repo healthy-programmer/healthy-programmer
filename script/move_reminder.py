@@ -260,8 +260,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
         def next_exercise():
             # Use shared config/gif logic
             from config_utils import load_config_and_gifs, get_active_gif_list
-            if timer_reset is not None:
-                timer_reset[0] = True
+            # Do not reset timer_reset here; only Close or auto-close should reset the global timer
 
             config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personal_setup.json")
             all_gif_files, selected_gifs, general_config = load_config_and_gifs(config_path, get_gif_files)
