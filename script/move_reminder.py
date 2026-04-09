@@ -503,6 +503,21 @@ def main():
             # Get the current time
             now = datetime.now()
             # Check if we are within working hours
+            if config_changed[0]:
+                # If config was changed in the UI, reload all config and update variables
+                gif_files, selected_gifs, general_config = load_config_and_gifs(config_path, get_gif_files)
+                available = get_active_gif_list(gif_files, selected_gifs, config_path)
+                interval = general_config["interval"]
+                duration = general_config["duration"]
+                position = general_config["position"]
+                working_hours = general_config["working_hours"]
+                (start_h, start_m), (end_h, end_m) = parse_working_hours(working_hours)
+                print(f"[INFO] Config reloaded: interval={interval}, duration={duration}, position={position}, working_hours={working_hours}")
+                config_changed[0] = False
+                # Restart timer for next reminder
+                next_reminder_time = now + timedelta(minutes=interval)
+                print(f"[DEBUG] Time to next exercise: {interval}m 0s")
+                seconds_remaining = interval * 60
             if is_within_working_hours(now, start_h, start_m, end_h, end_m):
                 # Only show popup if enough time has passed since last popup
                 if (now - last_popup_time).total_seconds() >= interval * 60:
@@ -548,22 +563,6 @@ def main():
             # Wait until it's time for the next reminder, handling config reloads and working hours
             while seconds_remaining > 0:
                 now = datetime.now()
-                if config_changed[0]:
-                    # If config was changed in the UI, reload all config and update variables
-                    gif_files, selected_gifs, general_config = load_config_and_gifs(config_path, get_gif_files)
-                    available = get_active_gif_list(gif_files, selected_gifs, config_path)
-                    interval = general_config["interval"]
-                    duration = general_config["duration"]
-                    position = general_config["position"]
-                    working_hours = general_config["working_hours"]
-                    (start_h, start_m), (end_h, end_m) = parse_working_hours(working_hours)
-                    print(f"[INFO] Config reloaded: interval={interval}, duration={duration}, position={position}, working_hours={working_hours}")
-                    config_changed[0] = False
-                    # Restart timer for next reminder
-                    next_reminder_time = now + timedelta(minutes=interval)
-                    print(f"[DEBUG] Time to next exercise: {interval}m 0s")
-                    seconds_remaining = interval * 60
-                    break
                 if timer_reset[0]:
                     # If timer reset was requested from popup, reset timer and clear flag
                     timer_reset[0] = False
