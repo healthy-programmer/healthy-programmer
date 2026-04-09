@@ -303,30 +303,12 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
         reset_timer()
 
         def next_exercise():
-            # Always read selected_gifs from personal_setup.json
+            # Use shared config/gif logic
+            from config_utils import load_config_and_gifs, get_active_gif_list
+
             config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personal_setup.json")
-            personalized_gifs = []
-            if os.path.exists(config_path):
-                try:
-                    with open(config_path, "r", encoding="utf-8") as f:
-                        config_data = json.load(f)
-                        if isinstance(config_data, dict):
-                            personalized_gifs = config_data.get("selected_gifs", [])
-                        elif isinstance(config_data, list):
-                            personalized_gifs = config_data
-                except Exception as e:
-                    print(f"[DEBUG] Error loading personalized config: {e}")
-                    personalized_gifs = []
-            else:
-                print("[DEBUG] personal_setup.json not found. Using all exercises.")
-
-            # Fallback to all exercises if personalized config is empty
-            if not personalized_gifs:
-                print("[DEBUG] Personalized configuration is empty. Using all exercises.")
-                personalized_gifs = [os.path.basename(f) for f in gif_files]
-
-            # Pick a new random gif (not the current one) ONLY from checked (included) exercises
-            available = [f for f in gif_files if f != current["gif_path"] and os.path.basename(f) in personalized_gifs]
+            all_gif_files, selected_gifs, general_config = load_config_and_gifs(config_path, get_gif_files)
+            available = get_active_gif_list(all_gif_files, selected_gifs, current["gif_path"])
             if not available:
                 print("[DEBUG] No available personalized exercises to choose from.")
                 return
@@ -527,8 +509,8 @@ def main():
     working_hours = general_config["working_hours"]
 
     # Always filter gif_files by selected_gifs from personal_setup.json if present
-    if isinstance(general_config, dict) and "selected_gifs" in general_config and general_config["selected_gifs"]:
-        gif_files = [f for f in gif_files if os.path.basename(f) in general_config["selected_gifs"]]
+    from config_utils import get_active_gif_list
+    gif_files = get_active_gif_list(gif_files, selected_gifs)
 
     print(f"Move reminder started! Every {interval} minutes a random exercise GIF will pop up.")
     print("Press Ctrl+C to stop.")

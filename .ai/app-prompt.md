@@ -232,38 +232,11 @@ I have changes interval from 2 to 5 minues.
 But after pressing CLOSE button on reminder screen, in console I see: [DEBUG] Time to next exercise: 2m 0s which was
 original value. Counter is not updated based on new config value.
 
-# 29)
-Extract parsing of the arguments into argument_parser.py
+# 29) Extract parsing of the arguments into argument_parser.py
 
-    parser = argparse.ArgumentParser(
-        description="Remind yourself to move every N minutes by popping up a random exercise GIF."
-    )
-    parser.add_argument(
-        "--interval",
-        type=int,
-        default=30,
-        help="Interval in minutes between reminders (default: 30)"
-    )
-    parser.add_argument(
-        "--duration",
-        type=int,
-        default=30,
-        help="How long (seconds) to show the GIF window (default: 30)"
-    )
-    parser.add_argument(
-        "--position",
-        type=str,
-        choices=["top-left", "top-right", "bottom-left", "bottom-right", "center"],
-        default="bottom-right",
-        help="Popup window position: top-left, top-right, bottom-left, bottom-right, center (default: bottom-right)"
-    )
-    parser.add_argument(
-        "--working-hours",
-        type=str,
-        default="8:00-16:30",
-        help="Only show reminders between these hours (24h format, e.g. 8:00-16:30). Default: 8:00-16:30"
-    )
-    args = parser.parse_args()
+# 30) Simplify code in move_reminder.py. There should be some reuse regarding random and next exercise.
+I don't like the smell or duplicity regarding personalized_gifs = [] and related code
+and the selected_gifs ... it should be some common functionality and reused.
 
 
 

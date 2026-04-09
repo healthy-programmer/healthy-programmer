@@ -42,3 +42,19 @@ def save_config_to_file(config_path, general_config, selected_gifs):
     config_data["selected_gifs"] = list(selected_gifs)
     with open(config_path, "w", encoding="utf-8") as f:
         json.dump(config_data, f, indent=2)
+
+def get_active_gif_list(all_gif_files, selected_gifs, current_gif=None):
+    """
+    Return a list of GIF file paths to use, based on selected_gifs (by basename).
+    If selected_gifs is empty, fallback to all_gif_files.
+    Optionally exclude current_gif from the result.
+    """
+    if not selected_gifs:
+        # Fallback: use all GIFs by basename
+        selected_gif_names = {os.path.basename(f) for f in all_gif_files}
+    else:
+        selected_gif_names = set(selected_gifs)
+    result = [f for f in all_gif_files if os.path.basename(f) in selected_gif_names]
+    if current_gif is not None:
+        result = [f for f in result if f != current_gif]
+    return result
