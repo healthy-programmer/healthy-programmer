@@ -53,11 +53,12 @@ def get_active_gif_list(all_gif_files, selected_gifs, current_gif=None):
     Optionally exclude current_gif from the result.
     """
     if not selected_gifs:
-        # Fallback: use all GIFs by basename
-        selected_gif_names = {os.path.basename(f) for f in all_gif_files}
+        # If no gifs are selected, do not show any gifs (no fallback to all gifs)
+        return []
     else:
         selected_gif_names = set(selected_gifs)
     result = [f for f in all_gif_files if os.path.basename(f) in selected_gif_names]
     if current_gif is not None:
         result = [f for f in result if f != current_gif]
+    print(f"[DEBUG] get_active_gif_list: selected_gifs={selected_gifs}, result={result}")
     return result

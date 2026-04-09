@@ -10,6 +10,7 @@ popup_open = threading.Event()
 import csv
 import json
 import textwrap
+import subprocess
 
 from datetime import datetime, timedelta
 from exercise_log import ExerciseLogger, ExerciseLogViewer
@@ -43,7 +44,6 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
     After showing, restore focus to the previously active window using xdotool if available.
     The popup window will appear at the specified position.
     """
-    import subprocess
 
     # Get the window id of the currently focused window using xdotool.
     def get_focused_window():
@@ -487,7 +487,7 @@ def main():
     # Filter GIFs to only those selected in the config (if any)
     # Is a list of full file paths from all available GIFs, filtered to only those whose basenames
     # are in selected_gifs. If selected_gifs is empty, it falls back to all GIFs.
-    gif_files = get_active_gif_list(gif_files, selected_gifs)
+    available = get_active_gif_list(gif_files, selected_gifs)
 
     # Print startup info
     print(f"Move reminder started! Every {interval} minutes a random exercise GIF will pop up.")
@@ -507,7 +507,7 @@ def main():
                 # Only show popup if enough time has passed since last popup
                 if (now - last_popup_time).total_seconds() >= interval * 60:
                     # Pick a random GIF from the available list
-                    gif_path = random.choice(gif_files)
+                    gif_path = random.choice(available)
                     gif_name = os.path.basename(gif_path)
                     # Get description, area, and action for the selected GIF
                     gif_info = gif_desc_map.get(gif_name, {})
@@ -525,7 +525,6 @@ def main():
                     # Show the GIF popup reminder
                     if not popup_open.is_set():
                         popup_open.set()
-                        print("SME TU !!!")
                         show_gif(
                             gif_path,
                             description=description,
@@ -552,6 +551,7 @@ def main():
                 if config_changed[0]:
                     # If config was changed in the UI, reload all config and update variables
                     gif_files, selected_gifs, general_config = load_config_and_gifs(config_path, get_gif_files)
+                    available = get_active_gif_list(gif_files, selected_gifs, config_path)
                     interval = general_config["interval"]
                     duration = general_config["duration"]
                     position = general_config["position"]

@@ -238,8 +238,12 @@ original value. Counter is not updated based on new config value.
 I don't like the smell or duplicity regarding personalized_gifs = [] and related code
 and the selected_gifs ... it should be some common functionality and reused.
 
-# 31) Extract load_gif_descriptions into exercise_portfolio.py
-
+# 31)
+I don't like the thread implementation and popup windows and timers. It is not working good. 
+Problem over problem. Can you refactor is the
+way that is not EVENT based ? Simple loop. between 2 exercises is INTERVAL expected based on config.
+When the POPUP is open, the no time runs. and it is ok. after it is CLOSES (automaticaly after DURATION or by
+close button) new INTERVAL runs ...
 
 
 
