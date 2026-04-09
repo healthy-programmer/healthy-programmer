@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import argparse
+from argument_parser import parse_args
 import os
 import random
 import sys
@@ -459,8 +459,9 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
             def reset_timer_callback():
                 if config_changed_flag is not None:
                     config_changed_flag[0] = True
+                reset_timer()
             def cancel_timer_callback():
-                pass
+                cancel_timer()
             open_setup_page(parent, reset_timer_callback, cancel_timer_callback)
 
         # Defensive: ensure general_config is always defined
@@ -506,35 +507,7 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
 def main():
     import threading
 
-    parser = argparse.ArgumentParser(
-        description="Remind yourself to move every N minutes by popping up a random exercise GIF."
-    )
-    parser.add_argument(
-        "--interval",
-        type=int,
-        default=30,
-        help="Interval in minutes between reminders (default: 30)"
-    )
-    parser.add_argument(
-        "--duration",
-        type=int,
-        default=30,
-        help="How long (seconds) to show the GIF window (default: 30)"
-    )
-    parser.add_argument(
-        "--position",
-        type=str,
-        choices=["top-left", "top-right", "bottom-left", "bottom-right", "center"],
-        default="bottom-right",
-        help="Popup window position: top-left, top-right, bottom-left, bottom-right, center (default: bottom-right)"
-    )
-    parser.add_argument(
-        "--working-hours",
-        type=str,
-        default="8:00-16:30",
-        help="Only show reminders between these hours (24h format, e.g. 8:00-16:30). Default: 8:00-16:30"
-    )
-    args = parser.parse_args()
+    args = parse_args()
 
     config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personal_setup.json")
     config_changed = [False]  # Mutable flag to allow modification from inner scope
