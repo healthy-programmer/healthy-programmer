@@ -6,6 +6,7 @@ import random
 import sys
 import time
 import threading
+popup_open = threading.Event()
 import csv
 import json
 
@@ -72,6 +73,9 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
             }
         import textwrap
         from tkinter import Text, Scrollbar, Frame, BOTH, RIGHT, Y, Button
+
+        # Set popup_open flag when popup is created
+        popup_open.set()
 
         # Load all gif files and descriptions for "Next exercise"
         gif_files = get_gif_files()
@@ -364,6 +368,8 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
                 timer_reset[0] = True
             reset_timer()
             root.destroy()
+            # Clear popup_open flag when popup is destroyed
+            popup_open.clear()
 
         close_btn = Button(button_frame, text="Close", command=close_and_debug, font=("Arial", 10), width=6, height=2)
         close_btn.pack(side="right", padx=(2,6), pady=4, fill="x", expand=True)
@@ -426,6 +432,8 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
         ExerciseLogger.log_exercise(current["gif_path"], current["description"], current["area"], current["action"])
 
         root.mainloop()
+        # Ensure popup_open is cleared if window is closed by other means
+        popup_open.clear()
 
     # Show the GIF using the feh image viewer (if available).
     def _show_with_feh():
@@ -512,21 +520,25 @@ def main():
                 if action:
                     print(f"Action: {action}")
                 # Show the GIF popup reminder
-                show_gif(
-                    gif_path,
-                    description=description,
-                    duration=duration,
-                    position=position,
-                    general_config=general_config,
-                    config_changed=config_changed,
-                    timer_reset=timer_reset
-                )
+                if not popup_open.is_set():
+                    popup_open.set()
+                    show_gif(
+                        gif_path,
+                        description=description,
+                        duration=duration,
+                        position=position,
+                        general_config=general_config,
+                        config_changed=config_changed,
+                        timer_reset=timer_reset
+                    )
+                else:
+                    print("[DEBUG] Popup already open, skipping new popup.")
             else:
                 # If outside working hours, skip showing a reminder
                 print(f"[{now:%Y-%m-%d %H:%M:%S}] Outside working hours ({working_hours}), skipping reminder.")
 
             # Calculate when the next reminder should occur
-            next_reminder_time = datetime.now() + timedelta(minutes=interval)
+            next_reminder_time = now + timedelta(minutes=interval)
             seconds_remaining = interval * 60
 
             # Wait until it's time for the next reminder, handling config reloads and working hours
@@ -543,14 +555,14 @@ def main():
                     print(f"[INFO] Config reloaded: interval={interval}, duration={duration}, position={position}, working_hours={working_hours}")
                     config_changed[0] = False
                     # Restart timer for next reminder
-                    next_reminder_time = datetime.now() + timedelta(minutes=interval)
+                    next_reminder_time = now + timedelta(minutes=interval)
                     print(f"[DEBUG] Time to next exercise: {interval}m 0s")
                     seconds_remaining = interval * 60
                     break
                 if timer_reset[0]:
                     # If timer reset was requested from popup, reset timer and clear flag
                     timer_reset[0] = False
-                    next_reminder_time = datetime.now() + timedelta(minutes=interval)
+                    next_reminder_time = now + timedelta(minutes=interval)
                     print(f"[DEBUG] Timer reset from popup. Time to next exercise: {interval}m 0s")
                     seconds_remaining = interval * 60
                     break
