@@ -34,7 +34,7 @@ from ui_utils import animate_gif
 from config_utils import get_active_gif_list
 
 # Show a GIF reminder popup, using either Tkinter or feh, and restore focus after display.
-def show_gif(gif_path, description="", duration=30, position="bottom-right", general_config=None, config_changed=None):
+def show_gif(gif_path, description="", duration=30, position="bottom-right", general_config=None, config_changed=None, timer_reset=None):
     """
     Show a GIF as a reminder, preferring 'feh' if available to avoid stealing focus.
     After showing, restore focus to the previously active window using xdotool if available.
@@ -247,12 +247,17 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
             timer_id[0] = root.after(duration * 1000, root.destroy)
             minutes = general_config["interval"] if general_config and "interval" in general_config else 30
             print(f"[DEBUG] Time to next exercise: {minutes}m 0s")
+            # If timer_reset is provided, set it to True to signal main loop to reset timer
+            if timer_reset is not None:
+                timer_reset[0] = True
 
         reset_timer()
 
         def next_exercise():
             # Use shared config/gif logic
             from config_utils import load_config_and_gifs, get_active_gif_list
+            if timer_reset is not None:
+                timer_reset[0] = True
 
             config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "personal_setup.json")
             all_gif_files, selected_gifs, general_config = load_config_and_gifs(config_path, get_gif_files)
@@ -355,6 +360,8 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
         def close_and_debug():
             if config_changed is not None:
                 config_changed[0] = True
+            if timer_reset is not None:
+                timer_reset[0] = True
             reset_timer()
             root.destroy()
 
@@ -442,12 +449,12 @@ def show_gif(gif_path, description="", duration=30, position="bottom-right", gen
 
 # Main entry point for the move reminder application.
 def main():
-    """
-    Main entry point for the move reminder application.
+    # Main entry point for the move reminder application.
+    # Add a flag to signal timer reset from popup actions
+    timer_reset = [False]
 
-    Parses command-line arguments, loads configuration and exercise portfolio,
-    and starts the reminder loop that periodically shows exercise GIFs during working hours.
-    """
+    # Parses command-line arguments, loads configuration and exercise portfolio,
+    # and starts the reminder loop that periodically shows exercise GIFs during working hours.
     # Parse command-line arguments (e.g., --interval, --duration, etc.)
     args = parse_args()
 
@@ -471,6 +478,8 @@ def main():
     working_hours = general_config["working_hours"]  # Time range for reminders
 
     # Filter GIFs to only those selected in the config (if any)
+    # Is a list of full file paths from all available GIFs, filtered to only those whose basenames
+    # are in selected_gifs. If selected_gifs is empty, it falls back to all GIFs.
     gif_files = get_active_gif_list(gif_files, selected_gifs)
 
     # Print startup info
@@ -509,7 +518,8 @@ def main():
                     duration=duration,
                     position=position,
                     general_config=general_config,
-                    config_changed=config_changed
+                    config_changed=config_changed,
+                    timer_reset=timer_reset
                 )
             else:
                 # If outside working hours, skip showing a reminder
@@ -535,6 +545,13 @@ def main():
                     # Restart timer for next reminder
                     next_reminder_time = datetime.now() + timedelta(minutes=interval)
                     print(f"[DEBUG] Time to next exercise: {interval}m 0s")
+                    seconds_remaining = interval * 60
+                    break
+                if timer_reset[0]:
+                    # If timer reset was requested from popup, reset timer and clear flag
+                    timer_reset[0] = False
+                    next_reminder_time = datetime.now() + timedelta(minutes=interval)
+                    print(f"[DEBUG] Timer reset from popup. Time to next exercise: {interval}m 0s")
                     seconds_remaining = interval * 60
                     break
                 if not is_within_working_hours(now, start_h, start_m, end_h, end_m):
